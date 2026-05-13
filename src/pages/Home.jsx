@@ -54,20 +54,26 @@ function SchoolLogo({ name, color }) {
 }
 
 // Floating skill tag cloud for About section
+// accent = true → brand orange; false → neutral slate
 const SKILL_TAGS = [
-  { label: 'Deep Work', color: '#FF6B35', size: 1.15 },
-  { label: 'AI Tools', color: '#6366f1', size: 1.1 },
-  { label: 'TikTok Strategy', color: '#FF6B35', size: 1.0 },
-  { label: 'Content Ops', color: '#3D3D3D', size: 1.05 },
-  { label: 'Growth Experiments', color: '#6366f1', size: 0.95 },
-  { label: 'Claude Code', color: '#10b981', size: 1.0 },
-  { label: 'React + Vite', color: '#10b981', size: 0.9 },
-  { label: 'English · Fluent', color: '#3D3D3D', size: 1.0 },
-  { label: 'Global Business', color: '#FF6B35', size: 0.95 },
-  { label: 'Product Thinking', color: '#6366f1', size: 1.05 },
-  { label: 'Zero → One', color: '#FF6B35', size: 1.1 },
-  { label: 'Vibe Coding', color: '#10b981', size: 0.9 },
+  { label: 'Deep Work', accent: true, size: 1.1 },
+  { label: 'AI Tools', accent: true, size: 1.1 },
+  { label: 'TikTok Strategy', accent: false, size: 1.0 },
+  { label: 'Content Ops', accent: false, size: 1.05 },
+  { label: 'Growth Experiments', accent: false, size: 0.95 },
+  { label: 'Claude Code', accent: true, size: 1.0 },
+  { label: 'React + Vite', accent: false, size: 0.9 },
+  { label: 'English · Fluent', accent: false, size: 1.0 },
+  { label: 'Global Business', accent: false, size: 0.95 },
+  { label: 'Product Thinking', accent: true, size: 1.05 },
+  { label: 'Zero → One', accent: true, size: 1.1 },
+  { label: 'Vibe Coding', accent: false, size: 0.9 },
 ]
+const TAG_ACCENT = '#e85d04'
+const TAG_BASE   = '#475569'
+
+// row offsets create an organic zigzag layout
+const ROW_OFFSETS = [0, 24, 8, 32, 4, 28, 12, 36, 0, 20, 8, 30]
 
 function SkillCloud() {
   const [hovered, setHovered] = useState(null)
@@ -78,16 +84,13 @@ function SkillCloud() {
   }, [])
   const T = tick * 0.022
 
-  // Arrange tags in a loose organic grid — 3 columns, offset rows
-  const cols = 3
-  const colW = 148
-  const rowH = 44
   return (
-    <div style={{ position: 'relative', width: 200, flexShrink: 0 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+    <div style={{ position: 'relative', width: 240, flexShrink: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
         {SKILL_TAGS.map((tag, i) => {
           const floatY = Math.sin(T + i * 0.9) * 3
           const isHov = hovered === i
+          const c = tag.accent ? TAG_ACCENT : TAG_BASE
           return (
             <div
               key={tag.label}
@@ -96,21 +99,20 @@ function SkillCloud() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '5px 13px',
+                padding: '5px 14px',
                 borderRadius: 99,
-                fontSize: `${0.78 * tag.size}rem`,
-                fontWeight: isHov ? 700 : 600,
+                fontSize: `${0.76 * tag.size}rem`,
+                fontWeight: 600,
                 letterSpacing: '0.01em',
-                background: isHov ? tag.color : `${tag.color}12`,
-                color: isHov ? '#fff' : tag.color,
-                border: `1.5px solid ${tag.color}40`,
-                transform: `translateY(${floatY}px) scale(${isHov ? 1.06 : 1})`,
-                transition: 'background 0.2s, color 0.2s, transform 0.18s, font-weight 0.1s',
+                background: isHov ? c : `${c}14`,
+                color: isHov ? '#fff' : c,
+                border: `1.5px solid ${c}50`,
+                transform: `translateX(${ROW_OFFSETS[i]}px) translateY(${floatY}px) scale(${isHov ? 1.05 : 1})`,
+                transition: 'background 0.2s, color 0.2s, transform 0.18s',
                 cursor: 'default',
                 userSelect: 'none',
-                alignSelf: i % 2 === 1 ? 'flex-end' : 'flex-start',
-                boxShadow: isHov ? `0 4px 16px ${tag.color}40` : 'none',
+                alignSelf: 'flex-start',
+                boxShadow: isHov ? `0 4px 14px ${c}45` : `0 1px 3px ${c}18`,
               }}
             >
               {tag.label}
