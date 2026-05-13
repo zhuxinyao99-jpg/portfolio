@@ -136,10 +136,11 @@ export default function Home() {
             >
               <ellipse
                 cx="50" cy="50" rx="30" ry="22"
-                stroke="rgba(255,107,53,0.22)"
-                strokeWidth="0.22"
-                strokeDasharray="1.4 2.2"
-                style={{ opacity: litCount > 0 ? 1 : 0, transition: 'opacity 1s ease' }}
+                stroke="rgba(255,107,53,0.5)"
+                strokeWidth="1.2"
+                strokeDasharray="5 7"
+                vectorEffect="non-scaling-stroke"
+                style={{ opacity: litCount > 0 ? 1 : 0, transition: 'opacity 1.2s ease' }}
               />
             </svg>
             {qualities.map((q, i) => {
