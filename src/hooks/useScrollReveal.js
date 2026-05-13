@@ -1,29 +1,32 @@
 import { useEffect } from 'react'
 
-export function useScrollReveal() {
+export function useScrollReveal(phase) {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible')
+    if (phase !== undefined && phase !== 'main') return
 
-            // Trigger progress bars
-            entry.target.querySelectorAll('.progress-fill').forEach(bar => {
-              bar.classList.add('active')
-            })
+    const timer = setTimeout(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible')
+              entry.target.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.classList.add('active')
+              })
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+      )
 
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-    )
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+        observer.observe(el)
+      })
 
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
-      observer.observe(el)
-    })
+      return () => observer.disconnect()
+    }, 100)
 
-    return () => observer.disconnect()
-  }, [])
+    return () => clearTimeout(timer)
+  }, [phase])
 }

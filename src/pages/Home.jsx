@@ -107,7 +107,7 @@ export default function Home() {
   const [showName, setShowName] = useState(false)
   const [expandedMethod, setExpandedMethod] = useState(null)
 
-  useScrollReveal()
+  useScrollReveal(phase)
 
   useEffect(() => {
     const t1 = setTimeout(() => setTitleReady(true), 800)
