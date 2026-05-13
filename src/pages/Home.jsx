@@ -53,475 +53,334 @@ function SchoolLogo({ name, color }) {
   )
 }
 
-/* ── SVG defs shared across all avatar states ── */
-function AvatarDefs() {
-  return (
-    <defs>
-      {/* skin */}
-      <radialGradient id="skinGrad" cx="45%" cy="38%" r="55%">
-        <stop offset="0%" stopColor="#FFECD6" />
-        <stop offset="60%" stopColor="#FDDCBC" />
-        <stop offset="100%" stopColor="#F0B98A" />
-      </radialGradient>
-      {/* skin shadow */}
-      <radialGradient id="skinShadow" cx="60%" cy="55%" r="50%">
-        <stop offset="0%" stopColor="#F0B98A" stopOpacity="0.6" />
-        <stop offset="100%" stopColor="#F0B98A" stopOpacity="0" />
-      </radialGradient>
-      {/* hair */}
-      <radialGradient id="hairGrad" cx="40%" cy="30%" r="60%">
-        <stop offset="0%" stopColor="#7A6A5A" />
-        <stop offset="40%" stopColor="#5C4E3E" />
-        <stop offset="100%" stopColor="#3A2E22" />
-      </radialGradient>
-      {/* jacket */}
-      <linearGradient id="jacketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#2D4A8A" />
-        <stop offset="50%" stopColor="#1E3A7A" />
-        <stop offset="100%" stopColor="#152C60" />
-      </linearGradient>
-      <linearGradient id="jacketSide" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#152C60" />
-        <stop offset="100%" stopColor="#1E3A7A" />
-      </linearGradient>
-      {/* jeans */}
-      <linearGradient id="jeansGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#4A4A5A" />
-        <stop offset="100%" stopColor="#2E2E3A" />
-      </linearGradient>
-      {/* shoe */}
-      <linearGradient id="shoeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#2A4A9A" />
-        <stop offset="100%" stopColor="#1A2E6A" />
-      </linearGradient>
-      {/* white tee */}
-      <linearGradient id="teeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#F8F8F2" />
-        <stop offset="100%" stopColor="#E8E8DC" />
-      </linearGradient>
-      {/* cheek blush */}
-      <radialGradient id="blushL" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="#F4A07A" stopOpacity="0.5" />
-        <stop offset="100%" stopColor="#F4A07A" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient id="blushR" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="#F4A07A" stopOpacity="0.5" />
-        <stop offset="100%" stopColor="#F4A07A" stopOpacity="0" />
-      </radialGradient>
-    </defs>
-  )
-}
-
-/* ── Shared head: design-ref accurate ── */
-function Head3D({ eyeDown = false, smirkRight = false, eyebrowAngry = false, eyesClosed = false, mouthOpen = false, offsetX = 0 }) {
-  return (
-    <g transform={`translate(${offsetX}, 0)`}>
-      {/* neck */}
-      <rect x="53" y="94" width="14" height="16" rx="5" fill="url(#skinGrad)" />
-      <rect x="57" y="94" width="4" height="16" fill="#E8C4A0" opacity="0.4" />
-
-      {/* head base shadow (3D depth) */}
-      <ellipse cx="64" cy="66" rx="32" ry="32" fill="#DFA870" opacity="0.25" />
-      {/* head */}
-      <ellipse cx="60" cy="64" rx="32" ry="32" fill="url(#skinGrad)" />
-      {/* face volume shadow */}
-      <ellipse cx="60" cy="64" rx="32" ry="32" fill="url(#skinShadow)" />
-      {/* cheek highlight */}
-      <ellipse cx="38" cy="72" rx="9" ry="6" fill="url(#blushL)" />
-      <ellipse cx="82" cy="72" rx="9" ry="6" fill="url(#blushR)" />
-      {/* nose */}
-      <ellipse cx="60" cy="74" rx="3.5" ry="2.5" fill="#E8B090" opacity="0.7" />
-
-      {/* ── HAIR ── layered for volume */}
-      {/* back hair mass */}
-      <ellipse cx="60" cy="40" rx="33" ry="22" fill="#3A2E22" />
-      {/* side hair left */}
-      <ellipse cx="29" cy="60" rx="8" ry="16" fill="#3A2E22" />
-      {/* side hair right */}
-      <ellipse cx="91" cy="60" rx="8" ry="16" fill="#3A2E22" />
-      {/* hair main top */}
-      <ellipse cx="60" cy="36" rx="30" ry="20" fill="url(#hairGrad)" />
-      {/* messy tufts — design ref shows spiky layered hair */}
-      <path d="M32 44 Q28 28 38 24 Q44 18 50 26 Q50 16 58 14 Q66 12 68 22 Q72 14 80 18 Q88 22 84 34 Q90 28 92 38" fill="url(#hairGrad)" />
-      {/* hair highlight */}
-      <ellipse cx="52" cy="28" rx="10" ry="5" fill="#8A7A66" opacity="0.5" />
-      {/* side tuft left over ear */}
-      <path d="M28 52 Q22 44 28 38 Q32 34 36 42" fill="url(#hairGrad)" />
-
-      {/* ears */}
-      <ellipse cx="28" cy="66" rx="6" ry="8" fill="url(#skinGrad)" />
-      <ellipse cx="29" cy="66" rx="4" ry="6" fill="#EDBA95" />
-      <ellipse cx="92" cy="66" rx="6" ry="8" fill="url(#skinGrad)" />
-      <ellipse cx="91" cy="66" rx="4" ry="6" fill="#EDBA95" />
-
-      {/* ── EYEBROWS ── */}
-      {eyebrowAngry ? (
-        <>
-          <path d="M40 49 Q47 46 53 50" stroke="#4A3828" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <path d="M67 50 Q73 46 80 49" stroke="#4A3828" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-        </>
-      ) : (
-        <>
-          <path d="M40 50 Q47 47 53 50" stroke="#4A3828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-          <path d="M67 50 Q73 47 80 50" stroke="#4A3828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-        </>
-      )}
-
-      {/* ── GLASSES ── large round frames, design ref */}
-      {/* left lens */}
-      <circle cx="47" cy="63" r="13" fill="rgba(180,220,255,0.08)" stroke="#1A1A2A" strokeWidth="2.8" />
-      {/* right lens */}
-      <circle cx="73" cy="63" r="13" fill="rgba(180,220,255,0.08)" stroke="#1A1A2A" strokeWidth="2.8" />
-      {/* bridge */}
-      <path d="M60 63 L60 63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="60" y1="63" x2="60" y2="63" stroke="#1A1A2A" strokeWidth="2" />
-      <path d="M55 63 Q60 61 65 63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      {/* temples */}
-      <line x1="28" y1="61" x2="34" y2="63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
-      <line x1="92" y1="61" x2="86" y2="63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
-      {/* lens glare */}
-      <path d="M41 57 Q44 55 47 57" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <path d="M67 57 Q70 55 73 57" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-
-      {/* ── EYES ── */}
-      {eyesClosed ? (
-        <>
-          <path d="M42 64 Q47 68 52 64" stroke="#3A2E22" strokeWidth="2" strokeLinecap="round" fill="none" />
-          <path d="M68 64 Q73 68 78 64" stroke="#3A2E22" strokeWidth="2" strokeLinecap="round" fill="none" />
-        </>
-      ) : (
-        <>
-          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="5.5" ry={eyeDown ? 4 : 5.5} fill="#2A2010" />
-          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="5.5" ry={eyeDown ? 4 : 5.5} fill="#2A2010" />
-          {/* iris */}
-          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="3.5" ry={eyeDown ? 2.8 : 3.5} fill="#6B4E2A" />
-          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="3.5" ry={eyeDown ? 2.8 : 3.5} fill="#6B4E2A" />
-          {/* pupil */}
-          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="2" ry={eyeDown ? 1.8 : 2} fill="#1A1008" />
-          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="2" ry={eyeDown ? 1.8 : 2} fill="#1A1008" />
-          {/* catchlight */}
-          <circle cx="45.5" cy={eyeDown ? 63.5 : 61.5} r="1.4" fill="white" />
-          <circle cx="71.5" cy={eyeDown ? 63.5 : 61.5} r="1.4" fill="white" />
-        </>
-      )}
-
-      {/* ── MOUTH ── */}
-      {mouthOpen
-        ? <path d="M49 82 Q60 92 71 82" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="#F4A07A" />
-        : smirkRight
-        ? <path d="M51 82 Q62 89 70 83" stroke="#C47A4A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-        : <path d="M50 82 Q60 90 70 82" stroke="#C47A4A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      }
-    </g>
-  )
-}
-
-/* ── Shared body: design-ref accurate ── */
-function Body3D({ armRaise = 0, armSwingL = 0, armSwingR = 0, legSpread = 0 }) {
-  return (
-    <g>
-      {/* white tee — visible at collar */}
-      <rect x="44" y="108" width="32" height="10" rx="4" fill="url(#teeGrad)" />
-      {/* jacket body */}
-      <path d="M30 120 Q28 160 32 188 Q46 194 60 194 Q74 194 88 188 Q92 160 90 120 Q76 110 60 108 Q44 110 30 120 Z" fill="url(#jacketGrad)" />
-      {/* jacket left panel shadow */}
-      <path d="M30 120 Q28 160 32 188 Q46 194 60 194 L60 108 Q44 110 30 120 Z" fill="#152C60" opacity="0.3" />
-      {/* jacket collar left */}
-      <path d="M44 108 L52 128 L60 120 L60 108" fill="url(#teeGrad)" />
-      {/* jacket collar right */}
-      <path d="M76 108 L68 128 L60 120 L60 108" fill="url(#teeGrad)" />
-      {/* jacket buttons */}
-      <circle cx="60" cy="135" r="2" fill="#1A2E60" />
-      <circle cx="60" cy="148" r="2" fill="#1A2E60" />
-      <circle cx="60" cy="161" r="2" fill="#1A2E60" />
-      {/* jacket left sleeve */}
-      <path
-        d={`M30 120 Q${20 - armSwingL} ${130 + armRaise} ${16 - armSwingL} ${160 + armRaise}`}
-        stroke="url(#jacketSide)" strokeWidth="20" strokeLinecap="round" fill="none"
-      />
-      {/* left hand */}
-      <ellipse cx={16 - armSwingL} cy={162 + armRaise} rx="8" ry="6" fill="url(#skinGrad)" transform={`rotate(${-10 - armSwingL * 0.5} ${16 - armSwingL} ${162 + armRaise})`} />
-      {/* jacket right sleeve */}
-      <path
-        d={`M90 120 Q${100 + armSwingR} ${130} ${104 + armSwingR} ${158}`}
-        stroke="url(#jacketSide)" strokeWidth="20" strokeLinecap="round" fill="none"
-      />
-      {/* right hand */}
-      <ellipse cx={104 + armSwingR} cy={160} rx="8" ry="6" fill="url(#skinGrad)" transform={`rotate(${10 + armSwingR * 0.5} ${104 + armSwingR} 160)`} />
-
-      {/* ── JEANS ── */}
-      {/* left leg */}
-      <path d={`M32 188 Q${30 - legSpread} 220 ${28 - legSpread} 260 Q${36 - legSpread} 268 ${46 - legSpread} 260 Q${50 - legSpread} 220 52 188 Z`} fill="url(#jeansGrad)" />
-      {/* right leg */}
-      <path d={`M88 188 Q${90 + legSpread} 220 ${92 + legSpread} 260 Q${84 + legSpread} 268 ${74 + legSpread} 260 Q${70 + legSpread} 220 68 188 Z`} fill="url(#jeansGrad)" />
-      {/* cuffed hems left */}
-      <rect x={23 - legSpread} y="256" width="24" height="8" rx="2" fill="#5A5A6A" />
-      {/* cuffed hems right */}
-      <rect x={69 + legSpread} y="256" width="24" height="8" rx="2" fill="#5A5A6A" />
-      {/* jean highlight */}
-      <rect x="44" y="192" width="6" height="60" rx="3" fill="rgba(255,255,255,0.08)" />
-      <rect x="70" y="192" width="6" height="60" rx="3" fill="rgba(255,255,255,0.08)" />
-
-      {/* ── SHOES ── canvas sneakers, design ref blue */}
-      {/* left shoe */}
-      <ellipse cx={35 - legSpread} cy={268} rx="16" ry="7" fill="url(#shoeGrad)" />
-      <rect x={19 - legSpread} y={261} width="32" height="10" rx="5" fill="url(#shoeGrad)" />
-      {/* shoe sole left */}
-      <ellipse cx={35 - legSpread} cy={270} rx="16" ry="4" fill="#0F1E50" />
-      {/* laces left */}
-      <line x1={26 - legSpread} y1="264" x2={44 - legSpread} y2="264" stroke="white" strokeWidth="1.2" opacity="0.7" />
-      <line x1={27 - legSpread} y1="267" x2={43 - legSpread} y2="267" stroke="white" strokeWidth="1.2" opacity="0.7" />
-      {/* right shoe */}
-      <ellipse cx={85 + legSpread} cy={268} rx="16" ry="7" fill="url(#shoeGrad)" />
-      <rect x={69 + legSpread} y={261} width="32" height="10" rx="5" fill="url(#shoeGrad)" />
-      <ellipse cx={85 + legSpread} cy={270} rx="16" ry="4" fill="#0F1E50" />
-      <line x1={76 + legSpread} y1="264" x2={94 + legSpread} y2="264" stroke="white" strokeWidth="1.2" opacity="0.7" />
-      <line x1={77 + legSpread} y1="267" x2={93 + legSpread} y2="267" stroke="white" strokeWidth="1.2" opacity="0.7" />
-    </g>
-  )
-}
-
-
-// Continuous narrative avatar: reading → coding → badminton, looping seamlessly
+/* ── Q-version chibi avatar — single unified SVG coordinate space ── */
+// Layout: big head (r≈42) centered at (100,76), tiny body below at y=136
+// All drawn as one component so head and body share the same coordinate system
 function EricAvatar() {
   const [tick, setTick] = useState(0)
-
   useEffect(() => {
     const t = setInterval(() => setTick(n => n + 1), 50)
     return () => clearInterval(t)
   }, [])
 
-  // Total cycle: 600 ticks (~30s). Segments: 0-200 reading, 200-400 coding, 400-600 badminton
-  const CYCLE = 600
-  const raw = tick % CYCLE
-  const prog = raw / CYCLE  // 0..1
+  // 720-tick cycle (~36s): reading → coding → badminton
+  const CYCLE = 720
+  const prog = (tick % CYCLE) / CYCLE
+  const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x-a)/(b-a))); return t*t*(3-2*t) }
 
-  // Scene weights: 0-0.33 reading, 0.33-0.66 coding, 0.66-1.0 badminton
-  // Smooth step for transitions
-  const smoothstep = (a, b, x) => {
-    const t = Math.max(0, Math.min(1, (x - a) / (b - a)))
-    return t * t * (3 - 2 * t)
-  }
+  const readW = prog < 0.31 ? 1 : 1 - ss(0.31, 0.37, prog)
+  const codeW = ss(0.31, 0.37, prog) - ss(0.64, 0.70, prog)
+  const badW  = ss(0.64, 0.70, prog) - (prog > 0.96 ? ss(0.96, 1.0, prog) : 0)
 
-  const readW  = smoothstep(0.30, 0.33, prog) === 0 && prog < 0.30 ? 1
-               : 1 - smoothstep(0.30, 0.36, prog)
-  const codeW  = smoothstep(0.30, 0.36, prog) - smoothstep(0.63, 0.69, prog)
-  const badW   = smoothstep(0.63, 0.69, prog) - (prog > 0.96 ? smoothstep(0.96, 1.0, prog) : 0)
+  const T = tick * 0.08
+  const breathY  = Math.sin(T) * 2.0
+  const nod      = readW > 0.5 ? Math.sin(T * 0.6) * 2 : 0
+  const pageFlip = Math.sin(T * 1.1) * 2.2
+  const typeTick = Math.floor(tick / 14) % 2
+  const bounce   = badW > 0.1 ? Math.abs(Math.sin(T * 2.0)) * 5 : 0
+  const armSwing = Math.sin(T * 1.5) * 8
+  const legSwing = Math.sin(T * 2.0) * 16
+  const shuttleX = Math.sin(T * 1.2) * 9
+  const shuttleY = Math.cos(T * 0.95) * 7
 
-  // Time in each scene (0..1 within that scene's window)
-  const readT  = prog < 0.33 ? prog / 0.33 : 0
-  const codeT  = prog >= 0.33 && prog < 0.66 ? (prog - 0.33) / 0.33 : 0
-  const badT   = prog >= 0.66 ? (prog - 0.66) / 0.34 : 0
+  // Coordinate constants — everything derived from these
+  const HX = 100, HY = 76         // head center
+  const BY = 138                   // body top (neck joins here)
+  const BH = 46                    // body height
+  const BW = 36                    // body half-width
+  const LLX = 89, LRX = 111       // leg top x (left/right)
+  const LY  = BY + BH              // leg top y
 
-  // Breathing + ambient motion
-  const T = tick * 0.07
-  const breathY   = Math.sin(T) * 2.2
-  const pageFlip  = Math.sin(T * 0.9) * 2.5
-  const typeTick  = Math.floor(tick / 16) % 2
-  const badBounce = Math.abs(Math.sin(T * 1.8)) * 4
-  const armSwing  = Math.sin(T * 1.4) * 6
-  const shuttleX  = Math.sin(T * 1.1) * 8
-  const shuttleY  = Math.cos(T * 0.9) * 6
-
-  // Desk: slides in from right for reading, slides out for coding
-  const deskX = readW > 0.05 ? 0 : -(1 - readW) * 80
-
-  // Laptop: appears for coding
-  const lapW = Math.max(0, codeW)
-
-  // Running stride for badminton
-  const strideL = Math.sin(T * 2.2) * 14 * badW
-  const strideR = -strideL
-
-  const SVG_W = 200
-  const SVG_H = 310
+  // Reading: head bobs down slightly
+  const eyeDropY = readW > 0.45 ? 3 : 0
+  const eyeSquish = readW > 0.45 ? 0.65 : 1.0
 
   return (
     <div className="animate-in" style={{ flexShrink: 0, userSelect: 'none' }}>
-      <svg
-        width={SVG_W} height={SVG_H}
-        viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-        fill="none"
-        style={{ filter: 'drop-shadow(0 16px 40px rgba(30,40,100,0.18)) drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
-      >
-        <AvatarDefs />
+      <svg width="200" height="280" viewBox="0 0 200 280" fill="none"
+        style={{ filter: 'drop-shadow(0 14px 36px rgba(30,40,100,0.16)) drop-shadow(0 2px 6px rgba(0,0,0,0.09))' }}>
+        <defs>
+          <radialGradient id="qSkin" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stopColor="#FFE4C8" />
+            <stop offset="70%" stopColor="#FCCFA8" />
+            <stop offset="100%" stopColor="#F0B98A" />
+          </radialGradient>
+          <radialGradient id="qHair" cx="38%" cy="28%" r="62%">
+            <stop offset="0%" stopColor="#6A5A4A" />
+            <stop offset="50%" stopColor="#4A3C2E" />
+            <stop offset="100%" stopColor="#2E2418" />
+          </radialGradient>
+          <linearGradient id="qJacket" x1="0%" y1="0%" x2="60%" y2="100%">
+            <stop offset="0%" stopColor="#3054A0" />
+            <stop offset="100%" stopColor="#182C68" />
+          </linearGradient>
+          <linearGradient id="qJeans" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#4A4A5E" />
+            <stop offset="100%" stopColor="#2C2C3A" />
+          </linearGradient>
+          <linearGradient id="qShoe" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3058B0" />
+            <stop offset="100%" stopColor="#1A2E70" />
+          </linearGradient>
+          <radialGradient id="qBlush" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#F9907A" stopOpacity="0.52" />
+            <stop offset="100%" stopColor="#F9907A" stopOpacity="0" />
+          </radialGradient>
+        </defs>
 
         {/* ground shadow */}
-        <ellipse cx="100" cy={SVG_H - 6} rx={48 + badW * 8} ry="7" fill="rgba(0,0,0,0.09)" />
+        <ellipse cx="100" cy="274" rx={38 + badW * 8} ry="5" fill="rgba(0,0,0,0.08)" />
 
-        {/* ── DESK (reading scene) ── */}
-        <g transform={`translate(${deskX}, 0)`} opacity={Math.max(0, readW)}>
-          {/* desk top */}
-          <rect x="10" y="192" width="140" height="10" rx="4" fill="#C8A882" />
-          <rect x="10" y="192" width="140" height="4" rx="4" fill="#DEB896" />
-          {/* desk legs */}
-          <rect x="18" y="202" width="8" height="52" rx="3" fill="#B89060" />
-          <rect x="134" y="202" width="8" height="52" rx="3" fill="#B89060" />
-          {/* book on desk */}
-          <g transform={`translate(${pageFlip * 0.3}, 0)`}>
-            <rect x="38" y="166" width="84" height="28" rx="4" fill="#4338CA" />
-            <rect x="38" y="166" width="40" height="28" rx="4" fill="#6D65F5" />
-            <line x1="78" y1="166" x2="78" y2="194" stroke="#3730A3" strokeWidth="2" />
-            {[173,180,187].map(y => (
-              <line key={y} x1="42" y1={y} x2="75" y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-            ))}
-            <rect x="38" y="166" width="3" height="28" rx="1.5" fill="rgba(255,255,255,0.18)" />
+        {/* ── DESK behind character (reading scene) ── */}
+        {readW > 0.02 && (
+          <g opacity={readW} transform={`translate(${(1-readW)*-55}, 0)`}>
+            <rect x="28" y={BY+BH+10} width="144" height="9" rx="4" fill="#C8A070" />
+            <rect x="28" y={BY+BH+10} width="144" height="4" rx="3" fill="#DEB888" />
+            <rect x="36" y={BY+BH+19} width="7" height="42" rx="3" fill="#A87848" />
+            <rect x="157" y={BY+BH+19} width="7" height="42" rx="3" fill="#A87848" />
           </g>
-          {/* small lamp */}
-          <line x1="128" y1="192" x2="126" y2="162" stroke="#8A7A6A" strokeWidth="3" strokeLinecap="round" />
-          <ellipse cx="121" cy="158" rx="14" ry="8" fill="#F5E6B0" opacity="0.9" />
-          <ellipse cx="121" cy="158" rx="14" ry="8" fill="none" stroke="#C8A882" strokeWidth="1.5" />
-          {/* lamp glow */}
-          <ellipse cx="121" cy="192" rx="18" ry="4" fill="rgba(255,230,120,0.18)" />
-        </g>
+        )}
 
-        {/* ── BODY ── */}
-        <g transform={`translate(0, ${breathY * (1 - badW * 0.6) + badBounce * badW})`}>
+        {/* ── ALL CHARACTER PARTS — single breathing group ── */}
+        <g transform={`translate(0, ${breathY + bounce})`}>
 
-          {/* legs — running when badminton */}
-          {badW > 0.05 ? (
+          {/* == LEGS (drawn behind body) == */}
+          {badW > 0.08 ? (
+            // running legs
             <>
-              {/* left leg running */}
-              <path d={`M68 188 Q${62 + strideL} 220 ${58 + strideL * 1.2} 264 Q${66 + strideL} 272 ${76 + strideL} 264 Q${80 + strideL} 220 76 188 Z`} fill="url(#jeansGrad)" />
-              {/* right leg running */}
-              <path d={`M92 188 Q${98 + strideR} 220 ${102 + strideR * 1.2} 264 Q${94 + strideR} 272 ${84 + strideR} 264 Q${80 + strideR} 220 84 188 Z`} fill="url(#jeansGrad)" />
-              {/* cuffs */}
-              <rect x={53 + strideL} y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
-              <rect x={79 + strideR} y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
-              {/* shoes */}
-              <ellipse cx={64 + strideL} cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
-              <rect x={50 + strideL} y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
-              <ellipse cx={64 + strideL} cy="271" rx="14" ry="3.5" fill="#0F1E50" />
-              <ellipse cx={90 + strideR} cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
-              <rect x={76 + strideR} y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
-              <ellipse cx={90 + strideR} cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+              <path d={`M${LLX} ${LY} Q${LLX-3+legSwing} ${LY+22} ${LLX-2+legSwing*1.1} ${LY+46}`}
+                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
+              <path d={`M${LRX} ${LY} Q${LRX+3-legSwing} ${LY+22} ${LRX+2-legSwing*1.1} ${LY+46}`}
+                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
+              <ellipse cx={LLX-2+legSwing*1.1} cy={LY+51} rx="13" ry="6" fill="url(#qShoe)" />
+              <ellipse cx={LLX-2+legSwing*1.1} cy={LY+53} rx="13" ry="3" fill="#0F1C50" />
+              <ellipse cx={LRX+2-legSwing*1.1} cy={LY+51} rx="13" ry="6" fill="url(#qShoe)" />
+              <ellipse cx={LRX+2-legSwing*1.1} cy={LY+53} rx="13" ry="3" fill="#0F1C50" />
             </>
           ) : (
+            // standing legs
             <>
-              {/* standing legs */}
-              <path d="M68 188 Q66 220 64 264 Q72 272 82 264 Q84 220 80 188 Z" fill="url(#jeansGrad)" />
-              <path d="M92 188 Q94 220 96 264 Q88 272 78 264 Q76 220 72 188 Z" fill="url(#jeansGrad)" />
-              <rect x="59" y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
-              <rect x="75" y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
-              <ellipse cx="70" cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
-              <rect x="56" y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
-              <ellipse cx="70" cy="271" rx="14" ry="3.5" fill="#0F1E50" />
-              <ellipse cx="90" cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
-              <rect x="76" y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
-              <ellipse cx="90" cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+              <path d={`M${LLX} ${LY} Q${LLX-2} ${LY+22} ${LLX-2} ${LY+46}`}
+                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
+              <path d={`M${LRX} ${LY} Q${LRX+2} ${LY+22} ${LRX+2} ${LY+46}`}
+                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
+              <rect x={LLX-11} y={LY+42} width="22" height="7" rx="3" fill="#52526A" />
+              <rect x={LRX-11} y={LY+42} width="22" height="7" rx="3" fill="#52526A" />
+              <ellipse cx={LLX-2} cy={LY+52} rx="13" ry="5.5" fill="url(#qShoe)" />
+              <ellipse cx={LLX-2} cy={LY+54} rx="13" ry="3" fill="#0F1C50" />
+              <ellipse cx={LRX+2} cy={LY+52} rx="13" ry="5.5" fill="url(#qShoe)" />
+              <ellipse cx={LRX+2} cy={LY+54} rx="13" ry="3" fill="#0F1C50" />
             </>
           )}
 
-          {/* jacket body */}
-          <rect x="72" y="108" width="16" height="8" rx="3" fill="url(#teeGrad)" />
-          <path d="M56 120 Q54 162 58 190 Q72 196 80 196 Q88 196 102 190 Q106 162 104 120 Q90 110 80 108 Q70 110 56 120 Z" fill="url(#jacketGrad)" />
-          <path d="M56 120 Q54 162 58 190 Q72 196 80 194 L80 108 Q70 110 56 120 Z" fill="#152C60" opacity="0.28" />
-          {/* collar */}
-          <path d="M70 108 L76 126 L80 118 L80 108" fill="url(#teeGrad)" />
-          <path d="M90 108 L84 126 L80 118 L80 108" fill="url(#teeGrad)" />
+          {/* == BODY (jacket) == */}
+          {/* collar strip */}
+          <rect x={HX-10} y={BY-2} width="20" height="10" rx="4" fill="#EEEAE2" />
+          {/* jacket shape */}
+          <path d={`M${HX-BW} ${BY+8} Q${HX-BW-5} ${BY+BH*0.55} ${HX-BW+2} ${BY+BH} Q${HX-8} ${BY+BH+7} ${HX} ${BY+BH+5} Q${HX+8} ${BY+BH+7} ${HX+BW-2} ${BY+BH} Q${HX+BW+5} ${BY+BH*0.55} ${HX+BW} ${BY+8} Q${HX+14} ${BY} ${HX} ${BY-2} Q${HX-14} ${BY} ${HX-BW} ${BY+8} Z`}
+            fill="url(#qJacket)" />
+          {/* jacket left shadow */}
+          <path d={`M${HX-BW} ${BY+8} Q${HX-BW-5} ${BY+BH*0.55} ${HX-BW+2} ${BY+BH} Q${HX-8} ${BY+BH+7} ${HX} ${BY+BH+5} L${HX} ${BY-2} Q${HX-14} ${BY} ${HX-BW} ${BY+8} Z`}
+            fill="#0F1E52" opacity="0.2" />
+          {/* collar V-notch */}
+          <path d={`M${HX-8} ${BY} L${HX-2} ${BY+14} L${HX} ${BY+8} L${HX} ${BY-2}`} fill="#EEEAE2" />
+          <path d={`M${HX+8} ${BY} L${HX+2} ${BY+14} L${HX} ${BY+8} L${HX} ${BY-2}`} fill="#EEEAE2" />
           {/* buttons */}
-          <circle cx="80" cy="138" r="1.8" fill="#1A2E60" />
-          <circle cx="80" cy="150" r="1.8" fill="#1A2E60" />
-          <circle cx="80" cy="162" r="1.8" fill="#1A2E60" />
+          {[BY+18, BY+30, BY+42].map(y => (
+            <circle key={y} cx={HX} cy={y} r="1.6" fill="#1A2860" />
+          ))}
 
+          {/* == ARMS == */}
           {/* left arm */}
-          {badW > 0.05 ? (
-            /* badminton: left arm out for balance */
-            <path d={`M56 120 Q${42 + armSwing * 0.4} ${134} ${36 + armSwing * 0.6} ${162}`}
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
-          ) : readW > 0.1 ? (
-            /* reading: arm holds book from left */
-            <path d="M56 120 Q44 138 36 162"
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          {badW > 0.08 ? (
+            <path d={`M${HX-BW} ${BY+10} Q${HX-BW-9+armSwing*0.3} ${BY+28} ${HX-BW-13+armSwing*0.5} ${BY+50}`}
+              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
           ) : (
-            /* coding: arm rests on laptop */
-            <path d="M56 120 Q46 142 38 168"
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+            <path d={`M${HX-BW} ${BY+10} Q${HX-BW-8} ${BY+36} ${HX-BW-7} ${BY+58}`}
+              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
           )}
           {/* left hand */}
-          <ellipse cx={badW > 0.05 ? 36 + armSwing * 0.6 : readW > 0.1 ? 36 : 38}
-                   cy={badW > 0.05 ? 164 : readW > 0.1 ? 164 : 170}
-                   rx="7" ry="5.5" fill="url(#skinGrad)" />
+          <circle
+            cx={badW > 0.08 ? HX-BW-13+armSwing*0.5 : HX-BW-7}
+            cy={badW > 0.08 ? BY+52 : BY+60}
+            r="7" fill="url(#qSkin)" />
 
           {/* right arm */}
-          {badW > 0.05 ? (
-            /* badminton: right arm raises with racket */
-            <path d={`M104 120 Q${118 - armSwing * 0.3} ${110 - armSwing} ${124 - armSwing * 0.4} ${86 - armSwing * 2}`}
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
-          ) : readW > 0.1 ? (
-            /* reading: right arm cradles book */
-            <path d="M104 120 Q116 138 122 164"
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          {badW > 0.08 ? (
+            <path d={`M${HX+BW} ${BY+10} Q${HX+BW+8-armSwing*0.2} ${BY+4-armSwing*1.0} ${HX+BW+14-armSwing*0.3} ${BY-16-armSwing*2.2}`}
+              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
           ) : (
-            /* coding: right arm on keyboard */
-            <path d="M104 120 Q114 142 120 168"
-              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+            <path d={`M${HX+BW} ${BY+10} Q${HX+BW+8} ${BY+36} ${HX+BW+7} ${BY+58}`}
+              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
           )}
           {/* right hand */}
-          <ellipse cx={badW > 0.05 ? 124 - armSwing * 0.4 : readW > 0.1 ? 122 : 120}
-                   cy={badW > 0.05 ? 84 - armSwing * 2 : readW > 0.1 ? 166 : 170}
-                   rx="7" ry="5.5" fill="url(#skinGrad)" />
+          <circle
+            cx={badW > 0.08 ? HX+BW+14-armSwing*0.3 : HX+BW+7}
+            cy={badW > 0.08 ? BY-14-armSwing*2.2 : BY+60}
+            r="7" fill="url(#qSkin)" />
 
-          {/* ── PROPS ── */}
+          {/* == PROPS == */}
 
-          {/* book (reading scene) */}
+          {/* Book held in arms (reading) */}
           {readW > 0.05 && (
-            <g opacity={readW} transform={`translate(${pageFlip * 0.4}, 0)`}>
-              <rect x="34" y="155" width="88" height="50" rx="5" fill="#4338CA" />
-              <rect x="34" y="155" width="42" height="50" rx="5" fill="#6D65F5" />
-              <line x1="76" y1="155" x2="76" y2="205" stroke="#3730A3" strokeWidth="2" />
-              {[163,171,179,187,195].map(y => (
-                <line key={y} x1="38" y1={y} x2="73" y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+            <g opacity={readW} transform={`translate(${pageFlip * 0.5}, 0)`}>
+              <rect x={HX-27} y={BY+48} width="54" height="36" rx="5" fill="#4338CA" />
+              <rect x={HX-27} y={BY+48} width="25" height="36" rx="5" fill="#6D65F5" />
+              <line x1={HX-2} y1={BY+48} x2={HX-2} y2={BY+84} stroke="#3730A3" strokeWidth="2" />
+              {[BY+57, BY+65, BY+73, BY+81].map(y => (
+                <line key={y} x1={HX-24} y1={y} x2={HX-5} y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth="0.9" />
               ))}
-              <rect x="34" y="155" width="3.5" height="50" rx="1.5" fill="rgba(255,255,255,0.18)" />
+              <rect x={HX-27} y={BY+48} width="3" height="36" rx="1.5" fill="rgba(255,255,255,0.2)" />
             </g>
           )}
 
-          {/* laptop (coding scene) */}
-          {lapW > 0.05 && (
-            <g opacity={lapW}>
-              <rect x="28" y="188" width="104" height="9" rx="3.5" fill="#374151" />
-              <rect x="34" y="150" width="92" height="42" rx="6" fill="#1E293B" />
-              <rect x="38" y="154" width="84" height="30" rx="3.5" fill="#0D1424" />
-              <text x="43" y="166" fontSize="5.5" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) =>'}</text>
-              <text x="43" y="175" fontSize="5.5" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
-              <text x="43" y="183" fontSize="5.5" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
-              <rect x="98" y="176" width="2" height="6" fill={typeTick ? '#A78BFA' : 'transparent'} />
+          {/* Laptop on lap (coding) */}
+          {codeW > 0.05 && (
+            <g opacity={codeW}>
+              <rect x={HX-40} y={BY+BH+4} width="80" height="7" rx="3" fill="#2E3A4A" />
+              <rect x={HX-34} y={BY+BH-30} width="68" height="36" rx="5" fill="#1A2535" />
+              <rect x={HX-30} y={BY+BH-26} width="60" height="24" rx="3" fill="#0A1220" />
+              <text x={HX-26} y={BY+BH-14} fontSize="5" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) =>'}</text>
+              <text x={HX-26} y={BY+BH-6} fontSize="5" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
+              <text x={HX-26} y={BY+BH+2} fontSize="5" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
+              <rect x={HX+10} y={BY+BH-8} width="2" height="5" fill={typeTick ? '#A78BFA' : 'transparent'} />
             </g>
           )}
 
-          {/* racket + shuttlecock (badminton scene) */}
+          {/* Racket + shuttlecock (badminton) */}
           {badW > 0.05 && (
             <g opacity={badW}>
-              {/* headband */}
-              <rect x="48" y="56" width="64" height="8" rx="4" fill="#FF6B35" opacity="0.92" />
-              {/* racket attached to raised right hand */}
-              <g transform={`rotate(${-40 - armSwing * 1.5}, ${124 - armSwing * 0.4}, ${84 - armSwing * 2})`}>
-                <rect x={121 - armSwing * 0.4} y={82 - armSwing * 2} width="5" height="28" rx="2.5" fill="#FF6B35" />
-                <ellipse cx={123 - armSwing * 0.4} cy={62 - armSwing * 2} rx="16" ry="21" fill="none" stroke="#C47A4A" strokeWidth="2.8" />
-                {[-10,-4,2,8].map(x => <line key={x} x1={123 + x - armSwing * 0.4} y1={41 - armSwing * 2} x2={123 + x - armSwing * 0.4} y2={83 - armSwing * 2} stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
-                {[-14,-6,2,10,18].map(dy => <line key={dy} x1={107 - armSwing * 0.4} y1={62 + dy - armSwing * 2} x2={139 - armSwing * 0.4} y2={62 + dy - armSwing * 2} stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
+              {/* headband arc over hair */}
+              <path d={`M${HX-28} ${HY-22} Q${HX} ${HY-50} ${HX+28} ${HY-22}`}
+                stroke="#FF6B35" strokeWidth="7" strokeLinecap="round" fill="none" />
+              {/* racket on raised right arm */}
+              <g transform={`rotate(${-38 - armSwing * 1.2}, ${HX+BW+14-armSwing*0.3}, ${BY-14-armSwing*2.2})`}>
+                <rect x={HX+BW+11-armSwing*0.3} y={BY-40-armSwing*2.2} width="5" height="24" rx="2.5" fill="#FF6B35" />
+                <ellipse cx={HX+BW+13-armSwing*0.3} cy={BY-58-armSwing*2.2} rx="14" ry="18" fill="none" stroke="#D06030" strokeWidth="2.5" />
+                {[-8,-2,4].map(x => (
+                  <line key={x}
+                    x1={HX+BW+13+x-armSwing*0.3} y1={BY-76-armSwing*2.2}
+                    x2={HX+BW+13+x-armSwing*0.3} y2={BY-40-armSwing*2.2}
+                    stroke="#D06030" strokeWidth="0.8" opacity="0.5" />
+                ))}
+                {[-10,-3,4,11].map(dy => (
+                  <line key={dy}
+                    x1={HX+BW-1-armSwing*0.3} y1={BY-58+dy-armSwing*2.2}
+                    x2={HX+BW+27-armSwing*0.3} y2={BY-58+dy-armSwing*2.2}
+                    stroke="#D06030" strokeWidth="0.8" opacity="0.5" />
+                ))}
               </g>
-              {/* shuttlecock floating */}
-              <g transform={`translate(${140 + shuttleX}, ${44 + shuttleY})`}>
-                <ellipse cx="0" cy="0" rx="5.5" ry="4.5" fill="white" stroke="#CCC" strokeWidth="1" />
-                <path d="M0 -4.5 L-8 -20 M0 -4.5 L0 -22 M0 -4.5 L8 -20" stroke="#DDD" strokeWidth="1.4" strokeLinecap="round" />
+              {/* shuttlecock */}
+              <g transform={`translate(${HX+54+shuttleX}, ${HY-28+shuttleY})`}>
+                <ellipse cx="0" cy="0" rx="5" ry="4" fill="white" stroke="#CCC" strokeWidth="1" />
+                <path d="M0 -4 L-7 -18 M0 -4 L0 -20 M0 -4 L7 -18" stroke="#DDD" strokeWidth="1.3" strokeLinecap="round" />
               </g>
             </g>
           )}
 
-          {/* ── HEAD ── */}
-          <Head3D
-            eyeDown={readW > 0.3}
-            smirkRight={codeW > 0.3}
-            eyebrowAngry={badW > 0.3}
-            mouthOpen={badW > 0.5}
-          />
+          {/* == HEAD (big Q-version, drawn on top of everything) == */}
+          <g transform={`translate(0, ${nod})`}>
+            {/* neck */}
+            <rect x={HX-7} y={HY+38} width="14" height="14" rx="5" fill="url(#qSkin)" />
+
+            {/* back hair (behind head) */}
+            <ellipse cx={HX} cy={HY-4} rx="44" ry="30" fill="#2E2418" />
+            <ellipse cx={HX-38} cy={HY+8} rx="10" ry="20" fill="#2E2418" />
+            <ellipse cx={HX+38} cy={HY+8} rx="10" ry="20" fill="#2E2418" />
+
+            {/* head */}
+            <ellipse cx={HX} cy={HY} rx="40" ry="44" fill="url(#qSkin)" />
+
+            {/* cheeks */}
+            <ellipse cx={HX-27} cy={HY+15} rx="11" ry="8" fill="url(#qBlush)" />
+            <ellipse cx={HX+27} cy={HY+15} rx="11" ry="8" fill="url(#qBlush)" />
+
+            {/* nose */}
+            <ellipse cx={HX} cy={HY+17} rx="3" ry="2.2" fill="#E8AE88" opacity="0.65" />
+
+            {/* hair cap on top */}
+            <ellipse cx={HX} cy={HY-20} rx="37" ry="24" fill="url(#qHair)" />
+            {/* messy tufts */}
+            <path d={`M${HX-6} ${HY-40} Q${HX} ${HY-60} ${HX+6} ${HY-40}`} fill="url(#qHair)" />
+            <path d={`M${HX-20} ${HY-38} Q${HX-28} ${HY-56} ${HX-12} ${HY-36}`} fill="url(#qHair)" />
+            <path d={`M${HX+12} ${HY-38} Q${HX+28} ${HY-56} ${HX+20} ${HY-36}`} fill="url(#qHair)" />
+            <path d={`M${HX-30} ${HY-28} Q${HX-44} ${HY-44} ${HX-24} ${HY-24}`} fill="url(#qHair)" />
+            <path d={`M${HX+24} ${HY-28} Q${HX+44} ${HY-44} ${HX+30} ${HY-24}`} fill="url(#qHair)" />
+            {/* hair highlight */}
+            <ellipse cx={HX-10} cy={HY-30} rx="11" ry="5" fill="#8A7860" opacity="0.32" />
+
+            {/* ears */}
+            <ellipse cx={HX-40} cy={HY+6} rx="7" ry="9" fill="url(#qSkin)" />
+            <ellipse cx={HX-39} cy={HY+6} rx="4.5" ry="6.5" fill="#EFC4A0" />
+            <ellipse cx={HX+40} cy={HY+6} rx="7" ry="9" fill="url(#qSkin)" />
+            <ellipse cx={HX+39} cy={HY+6} rx="4.5" ry="6.5" fill="#EFC4A0" />
+
+            {/* eyebrows */}
+            {badW > 0.35 ? (
+              <>
+                <path d={`M${HX-22} ${HY-12} Q${HX-14} ${HY-19} ${HX-6} ${HY-12}`} stroke="#3A2C1E" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+                <path d={`M${HX+6} ${HY-12} Q${HX+14} ${HY-19} ${HX+22} ${HY-12}`} stroke="#3A2C1E" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+              </>
+            ) : (
+              <>
+                <path d={`M${HX-22} ${HY-14} Q${HX-14} ${HY-21} ${HX-6} ${HY-14}`} stroke="#3A2C1E" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+                <path d={`M${HX+6} ${HY-14} Q${HX+14} ${HY-21} ${HX+22} ${HY-14}`} stroke="#3A2C1E" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+              </>
+            )}
+
+            {/* glasses — chunky round chibi frames */}
+            <circle cx={HX-14} cy={HY-2} r="12" fill="rgba(180,220,255,0.07)" stroke="#1A1828" strokeWidth="2.6" />
+            <circle cx={HX+14} cy={HY-2} r="12" fill="rgba(180,220,255,0.07)" stroke="#1A1828" strokeWidth="2.6" />
+            <path d={`M${HX-2} ${HY-2} Q${HX} ${HY-4} ${HX+2} ${HY-2}`} stroke="#1A1828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <line x1={HX-40} y1={HY-4} x2={HX-26} y2={HY-2} stroke="#1A1828" strokeWidth="2" strokeLinecap="round" />
+            <line x1={HX+40} y1={HY-4} x2={HX+26} y2={HY-2} stroke="#1A1828" strokeWidth="2" strokeLinecap="round" />
+            <path d={`M${HX-22} ${HY-8} Q${HX-18} ${HY-12} ${HX-14} ${HY-8}`} stroke="rgba(255,255,255,0.7)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+            <path d={`M${HX+6} ${HY-8} Q${HX+10} ${HY-12} ${HX+14} ${HY-8}`} stroke="rgba(255,255,255,0.7)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+
+            {/* eyes */}
+            {badW > 0.5 ? (
+              <>
+                <ellipse cx={HX-14} cy={HY-1} rx="5.5" ry="5.5" fill="#1E1608" />
+                <ellipse cx={HX+14} cy={HY-1} rx="5.5" ry="5.5" fill="#1E1608" />
+                <ellipse cx={HX-14} cy={HY-1} rx="3" ry="3" fill="#6B4C28" />
+                <ellipse cx={HX+14} cy={HY-1} rx="3" ry="3" fill="#6B4C28" />
+                <circle cx={HX-16} cy={HY-3} r="1.6" fill="white" />
+                <circle cx={HX+12} cy={HY-3} r="1.6" fill="white" />
+              </>
+            ) : readW > 0.45 ? (
+              <>
+                <ellipse cx={HX-14} cy={HY-1+eyeDropY} rx="5" ry={3.5*eyeSquish+1.5} fill="#1E1608" />
+                <ellipse cx={HX+14} cy={HY-1+eyeDropY} rx="5" ry={3.5*eyeSquish+1.5} fill="#1E1608" />
+                <ellipse cx={HX-14} cy={HY-1+eyeDropY} rx="3" ry={2.2*eyeSquish+1} fill="#6B4C28" />
+                <ellipse cx={HX+14} cy={HY-1+eyeDropY} rx="3" ry={2.2*eyeSquish+1} fill="#6B4C28" />
+                <circle cx={HX-16} cy={HY-3+eyeDropY} r="1.3" fill="white" />
+                <circle cx={HX+12} cy={HY-3+eyeDropY} r="1.3" fill="white" />
+              </>
+            ) : (
+              <>
+                <ellipse cx={HX-14} cy={HY-1} rx="5" ry="5.5" fill="#1E1608" />
+                <ellipse cx={HX+14} cy={HY-1} rx="5" ry="5.5" fill="#1E1608" />
+                <ellipse cx={HX-14} cy={HY-1} rx="3" ry="3.5" fill="#6B4C28" />
+                <ellipse cx={HX+14} cy={HY-1} rx="3" ry="3.5" fill="#6B4C28" />
+                <circle cx={HX-16} cy={HY-3} r="1.6" fill="white" />
+                <circle cx={HX+12} cy={HY-3} r="1.6" fill="white" />
+              </>
+            )}
+
+            {/* mouth */}
+            {badW > 0.5
+              ? <path d={`M${HX-10} ${HY+22} Q${HX} ${HY+34} ${HX+10} ${HY+22}`} stroke="#C07848" strokeWidth="2" strokeLinecap="round" fill="#F4A080" />
+              : codeW > 0.4
+              ? <path d={`M${HX-8} ${HY+22} Q${HX+4} ${HY+30} ${HX+10} ${HY+23}`} stroke="#C07848" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+              : <path d={`M${HX-8} ${HY+22} Q${HX} ${HY+30} ${HX+8} ${HY+22}`} stroke="#C07848" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            }
+          </g>
         </g>
       </svg>
     </div>
   )
 }
+
 
 const timeline = [
   { year: '本科', title: '英语专业', school: '西安外国语大学', schoolShort: '西外', schoolColor: '#1a5fb4', desc: '语言能力成为跨文化沟通的底层基础，养成用外语思维处理复杂信息的习惯', accent: false },
