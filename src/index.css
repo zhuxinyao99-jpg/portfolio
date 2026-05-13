@@ -333,17 +333,19 @@ img { max-width: 100%; display: block; }
 .cloud-word {
   position: absolute;
   transform: translate(-50%, -50%);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.12);
+  font-family: 'Syne', 'Space Grotesk', 'DM Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.1);
   transition: all 0.8s var(--ease);
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .cloud-word.cloud-lit {
-  color: rgba(26, 26, 26, 0.85);
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
-  transform: translate(-50%, -50%) scale(1.05);
+  color: rgba(20, 20, 20, 0.9);
+  text-shadow: 0 2px 24px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 107, 53, 0.15);
+  transform: translate(-50%, -50%) scale(1.07);
 }
 
 /* "This is ERIC" */

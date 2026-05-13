@@ -5,12 +5,12 @@ import Footer from '../components/Footer'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 
 const qualities = [
-  { word: 'DETAIL', angle: -90, size: 1.05 },
-  { word: 'RIGOROUS', angle: -30, size: 0.9 },
-  { word: 'STRUCTURED', angle: 30, size: 1.2 },
-  { word: 'EFFICIENT', angle: 90, size: 1.0 },
-  { word: 'DEPTH', angle: 150, size: 1.15 },
-  { word: 'READER & THINKER', angle: 210, size: 0.82 },
+  { word: 'DEEP WORK', angle: -90, size: 1.1 },
+  { word: 'RIGOROUS', angle: -30, size: 1.0 },
+  { word: 'STRUCTURED', angle: 30, size: 1.15 },
+  { word: 'BUILDER', angle: 90, size: 1.05 },
+  { word: 'DEPTH', angle: 150, size: 1.2 },
+  { word: 'LANGUAGE & MIND', angle: 210, size: 0.95 },
 ]
 
 function TiltCard({ children, style, className, onClick }) {
@@ -40,6 +40,172 @@ function TiltCard({ children, style, className, onClick }) {
       onClick={onClick}
     >
       {children}
+    </div>
+  )
+}
+
+const AVATAR_STATES = ['reading', 'coding', 'badminton']
+const AVATAR_LABELS = { reading: '📖 深度阅读中', coding: '⌨️ Vibe Coding', badminton: '🏸 打羽毛球' }
+
+function EricAvatar() {
+  const [stateIdx, setStateIdx] = useState(0)
+  const [hovered, setHovered] = useState(false)
+  const current = AVATAR_STATES[stateIdx]
+
+  useEffect(() => {
+    if (hovered) return
+    const t = setInterval(() => setStateIdx(i => (i + 1) % AVATAR_STATES.length), 2800)
+    return () => clearInterval(t)
+  }, [hovered])
+
+  const avatarSvg = {
+    reading: (
+      <svg width="120" height="140" viewBox="0 0 120 140" fill="none">
+        {/* body */}
+        <ellipse cx="60" cy="108" rx="32" ry="22" fill="#FFD6B0" />
+        {/* head */}
+        <circle cx="60" cy="62" r="34" fill="#FFD6B0" stroke="#E8A87C" strokeWidth="2" />
+        {/* hair */}
+        <ellipse cx="60" cy="36" rx="28" ry="14" fill="#3D2B1F" />
+        <ellipse cx="34" cy="52" rx="8" ry="14" fill="#3D2B1F" />
+        <ellipse cx="86" cy="52" rx="8" ry="14" fill="#3D2B1F" />
+        {/* eyes - looking down at book */}
+        <ellipse cx="49" cy="65" rx="5" ry="4" fill="white" />
+        <ellipse cx="71" cy="65" rx="5" ry="4" fill="white" />
+        <circle cx="50" cy="67" r="2.5" fill="#3D2B1F" />
+        <circle cx="72" cy="67" r="2.5" fill="#3D2B1F" />
+        {/* smile */}
+        <path d="M52 78 Q60 84 68 78" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="none" />
+        {/* book */}
+        <rect x="22" y="98" width="76" height="50" rx="4" fill="#6366f1" />
+        <rect x="22" y="98" width="37" height="50" rx="4" fill="#818cf8" />
+        <line x1="60" y1="98" x2="60" y2="148" stroke="#4338ca" strokeWidth="2" />
+        {/* arms holding book */}
+        <ellipse cx="30" cy="102" rx="10" ry="7" fill="#FFD6B0" transform="rotate(-20 30 102)" />
+        <ellipse cx="90" cy="102" rx="10" ry="7" fill="#FFD6B0" transform="rotate(20 90 102)" />
+        {/* glasses */}
+        <rect x="42" y="60" width="14" height="10" rx="5" fill="none" stroke="#8B6914" strokeWidth="1.5" />
+        <rect x="64" y="60" width="14" height="10" rx="5" fill="none" stroke="#8B6914" strokeWidth="1.5" />
+        <line x1="56" y1="65" x2="64" y2="65" stroke="#8B6914" strokeWidth="1.5" />
+      </svg>
+    ),
+    coding: (
+      <svg width="120" height="140" viewBox="0 0 120 140" fill="none">
+        {/* body */}
+        <rect x="28" y="95" width="64" height="40" rx="16" fill="#1e1e2e" />
+        {/* hoodie strings */}
+        <line x1="55" y1="100" x2="52" y2="115" stroke="#666" strokeWidth="2" />
+        <line x1="65" y1="100" x2="68" y2="115" stroke="#666" strokeWidth="2" />
+        {/* head */}
+        <circle cx="60" cy="60" r="34" fill="#FFD6B0" stroke="#E8A87C" strokeWidth="2" />
+        {/* hair */}
+        <ellipse cx="60" cy="34" rx="28" ry="14" fill="#3D2B1F" />
+        <ellipse cx="34" cy="50" rx="8" ry="14" fill="#3D2B1F" />
+        <ellipse cx="86" cy="50" rx="8" ry="14" fill="#3D2B1F" />
+        {/* focused eyes */}
+        <ellipse cx="48" cy="62" rx="6" ry="5" fill="white" />
+        <ellipse cx="72" cy="62" rx="6" ry="5" fill="white" />
+        <circle cx="49" cy="63" r="3" fill="#3D2B1F" />
+        <circle cx="73" cy="63" r="3" fill="#3D2B1F" />
+        {/* glint */}
+        <circle cx="50.5" cy="61.5" r="1" fill="white" />
+        <circle cx="74.5" cy="61.5" r="1" fill="white" />
+        {/* smirk */}
+        <path d="M53 76 Q62 80 68 74" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="none" />
+        {/* laptop */}
+        <rect x="15" y="112" width="90" height="28" rx="4" fill="#2d2d3e" />
+        <rect x="20" y="115" width="80" height="18" rx="2" fill="#0f0f1a" />
+        {/* code on screen */}
+        <text x="25" y="126" fontSize="5" fill="#a78bfa" fontFamily="monospace">{'const eric = () => {'}</text>
+        <text x="25" y="131" fontSize="5" fill="#6ee7b7" fontFamily="monospace">{'  build(ideas)'}</text>
+        {/* arms */}
+        <ellipse cx="28" cy="108" rx="12" ry="7" fill="#1e1e2e" transform="rotate(-15 28 108)" />
+        <ellipse cx="92" cy="108" rx="12" ry="7" fill="#1e1e2e" transform="rotate(15 92 108)" />
+        {/* fingers */}
+        <ellipse cx="22" cy="114" rx="6" ry="4" fill="#FFD6B0" />
+        <ellipse cx="98" cy="114" rx="6" ry="4" fill="#FFD6B0" />
+      </svg>
+    ),
+    badminton: (
+      <svg width="120" height="140" viewBox="0 0 120 140" fill="none">
+        {/* legs */}
+        <rect x="44" y="110" width="14" height="30" rx="7" fill="#4f46e5" transform="rotate(-10 44 110)" />
+        <rect x="62" y="110" width="14" height="30" rx="7" fill="#4f46e5" transform="rotate(15 62 110)" />
+        {/* body */}
+        <rect x="30" y="85" width="60" height="36" rx="16" fill="#6366f1" />
+        {/* head */}
+        <circle cx="60" cy="56" r="32" fill="#FFD6B0" stroke="#E8A87C" strokeWidth="2" />
+        {/* hair */}
+        <ellipse cx="60" cy="30" rx="26" ry="13" fill="#3D2B1F" />
+        <ellipse cx="35" cy="46" rx="7" ry="12" fill="#3D2B1F" />
+        <ellipse cx="85" cy="46" rx="7" ry="12" fill="#3D2B1F" />
+        {/* sporty headband */}
+        <rect x="32" y="38" width="56" height="8" rx="4" fill="#FF6B35" opacity="0.85" />
+        {/* eyes - determined look */}
+        <ellipse cx="48" cy="58" rx="6" ry="5" fill="white" />
+        <ellipse cx="72" cy="58" rx="6" ry="5" fill="white" />
+        <ellipse cx="49" cy="59" rx="3.5" ry="3" fill="#3D2B1F" />
+        <ellipse cx="73" cy="59" rx="3.5" ry="3" fill="#3D2B1F" />
+        {/* fierce eyebrows */}
+        <path d="M43 51 Q48 48 53 51" stroke="#3D2B1F" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        <path d="M67 51 Q72 48 77 51" stroke="#3D2B1F" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        {/* open mouth smiling */}
+        <path d="M50 70 Q60 78 70 70" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="#ffcba4" />
+        {/* racket arm */}
+        <rect x="80" y="78" width="12" height="40" rx="6" fill="#FFD6B0" transform="rotate(40 80 78)" />
+        {/* racket */}
+        <ellipse cx="108" cy="55" rx="14" ry="18" fill="none" stroke="#E8A87C" strokeWidth="3" />
+        <line x1="94" y1="55" x2="122" y2="55" stroke="#E8A87C" strokeWidth="1.5" opacity="0.6" />
+        <line x1="108" y1="37" x2="108" y2="73" stroke="#E8A87C" strokeWidth="1.5" opacity="0.6" />
+        <rect x="104" y="72" width="8" height="14" rx="4" fill="#FF6B35" />
+        {/* other arm */}
+        <rect x="28" y="88" width="12" height="28" rx="6" fill="#6366f1" transform="rotate(-20 28 88)" />
+        {/* shuttlecock */}
+        <circle cx="18" cy="30" r="5" fill="white" stroke="#ddd" strokeWidth="1" />
+        <path d="M18 25 L10 10 M18 25 L18 8 M18 25 L26 10" stroke="#ddd" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  }
+
+  return (
+    <div
+      className="animate-in"
+      style={{ position: 'relative', flexShrink: 0, cursor: 'pointer', userSelect: 'none' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => setStateIdx(i => (i + 1) % AVATAR_STATES.length)}
+      title="点击切换状态"
+    >
+      <div style={{
+        width: 156, height: 180, borderRadius: 32,
+        background: 'linear-gradient(135deg, #fff8f3 0%, #ffeee4 100%)',
+        border: '2px solid rgba(255,107,53,0.2)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 20px 60px rgba(255, 107, 53, 0.15)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        transform: hovered ? 'scale(1.05)' : 'scale(1)',
+      }}>
+        <div style={{ transition: 'opacity 0.3s ease' }}>
+          {avatarSvg[current]}
+        </div>
+        <div style={{
+          marginTop: 4, fontSize: '0.6875rem', color: 'var(--accent)',
+          fontWeight: 600, letterSpacing: '0.03em', textAlign: 'center',
+          padding: '4px 10px', borderRadius: 99,
+          background: 'rgba(255,107,53,0.1)',
+        }}>
+          {AVATAR_LABELS[current]}
+        </div>
+      </div>
+      <div style={{
+        position: 'absolute', inset: -10, borderRadius: 42,
+        border: '2px dashed rgba(255, 107, 53, 0.25)',
+        animation: 'spin 20s linear infinite',
+        pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'absolute', bottom: -8, left: '50%', transform: 'translateX(-50%)', fontSize: '0.625rem', color: 'var(--muted)', whiteSpace: 'nowrap' }}>
+        点击切换 ·  {stateIdx + 1}/{AVATAR_STATES.length}
+      </div>
     </div>
   )
 }
@@ -307,20 +473,18 @@ export default function Home() {
                   <div>
                     <p className="section-label animate-in" style={{ marginBottom: 16 }}>About Me — 关于我</p>
                     <h2 className="animate-in" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 28 }}>
-                      从商科生<br /><span style={{ color: 'var(--accent)' }}>到 AI Builder</span>
+                      语言 × 商科<br /><span style={{ color: 'var(--accent)' }}>× AI 复合型</span>
                     </h2>
-                    <p className="animate-in" style={{ fontSize: '1.0625rem', color: 'var(--secondary)', lineHeight: 1.85, maxWidth: 480, borderLeft: '3px solid var(--accent)', paddingLeft: 20 }}>
-                      我不是科班程序员，但我相信在 AI 时代，
-                      <strong style={{ color: 'var(--primary)' }}>真正的能力是用工具快速把想法变成现实</strong>——
-                      这个作品集本身就是最好的证明。
-                    </p>
+                    <blockquote className="animate-in" style={{ fontSize: '1rem', color: 'var(--secondary)', lineHeight: 1.9, maxWidth: 480, borderLeft: '3px solid var(--accent)', paddingLeft: 20, margin: 0 }}>
+                      <p style={{ marginBottom: 10 }}>
+                        "In an economy that's becoming increasingly competitive and subject to rapid change, the ability to perform deep work is becoming a rare and valuable skill."
+                      </p>
+                      <footer style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontStyle: 'normal' }}>
+                        — Cal Newport, <em>Deep Work</em> (2016)
+                      </footer>
+                    </blockquote>
                   </div>
-                  <div className="animate-in" style={{ position: 'relative', flexShrink: 0 }}>
-                    <div style={{ width: 156, height: 156, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent) 0%, #ff9a6c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.75rem', fontWeight: 800, color: 'white', boxShadow: '0 20px 60px rgba(255, 107, 53, 0.3)' }}>
-                      E
-                    </div>
-                    <div style={{ position: 'absolute', inset: -10, borderRadius: '50%', border: '2px dashed rgba(255, 107, 53, 0.3)', animation: 'spin 20s linear infinite' }} />
-                  </div>
+                  <EricAvatar />
                 </div>
                 <div className="animate-in" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 44 }}>
                   {['国际商务硕士', '英语流利', 'AI 工具用户', '内容运营', '海外市场'].map(tag => (
