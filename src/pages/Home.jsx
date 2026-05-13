@@ -53,9 +53,6 @@ function SchoolLogo({ name, color }) {
   )
 }
 
-const AVATAR_STATES = ['reading', 'coding', 'badminton']
-const AVATAR_LABELS = { reading: '📖 深度阅读中', coding: '⌨️ Vibe Coding', badminton: '🏸 打羽毛球' }
-
 /* ── SVG defs shared across all avatar states ── */
 function AvatarDefs() {
   return (
@@ -284,223 +281,244 @@ function Body3D({ armRaise = 0, armSwingL = 0, armSwingR = 0, legSpread = 0 }) {
   )
 }
 
-function _unused_Head3D_stub() {
-  return null
-  // kept to avoid edit offset issues — delete if refactoring
-  const pupilX = 0
-  return (
-    <g>
-      {/* neck */}
-      <rect x="52" y="95" width="16" height="14" rx="5" fill="#F5C5A0" />
-      {/* head shadow (gives 3D depth) */}
-      <ellipse cx="66" cy="68" rx="30" ry="30" fill="#E8A882" />
-      {/* head main */}
-      <ellipse cx="60" cy="66" rx="30" ry="30" fill="#FDDCBC" />
-      {/* cheek highlights */}
-      <ellipse cx="44" cy="75" rx="6" ry="4" fill="#F9A88A" opacity="0.45" />
-      <ellipse cx="76" cy="75" rx="6" ry="4" fill="#F9A88A" opacity="0.45" />
-      {/* hair shadow */}
-      <ellipse cx="63" cy="40" rx="27" ry="15" fill="#2A1F15" />
-      {/* hair main */}
-      <ellipse cx="60" cy="38" rx="27" ry="15" fill="#3D2B1F" />
-      {/* side hair left */}
-      <ellipse cx="33" cy="58" rx="7" ry="13" fill="#3D2B1F" />
-      {/* side hair right */}
-      <ellipse cx="87" cy="58" rx="7" ry="13" fill="#3D2B1F" />
-      {/* hair front tuft */}
-      <path d="M42 36 Q50 24 60 30 Q70 24 78 36" fill="#3D2B1F" />
-      {/* ear left */}
-      <ellipse cx="30" cy="68" rx="5" ry="7" fill="#FDDCBC" />
-      <ellipse cx="31" cy="68" rx="3" ry="5" fill="#F5C5A0" />
-      {/* ear right */}
-      <ellipse cx="90" cy="68" rx="5" ry="7" fill="#FDDCBC" />
-      <ellipse cx="89" cy="68" rx="3" ry="5" fill="#F5C5A0" />
 
-      {/* eyebrows */}
-      {eyebrowAngry ? (
-        <>
-          <path d="M43 53 Q49 50 55 53" stroke="#2A1F15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <path d="M65 53 Q71 50 77 53" stroke="#2A1F15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-        </>
-      ) : (
-        <>
-          <path d="M43 54 Q49 51 55 54" stroke="#2A1F15" strokeWidth="2" strokeLinecap="round" fill="none" />
-          <path d="M65 54 Q71 51 77 54" stroke="#2A1F15" strokeWidth="2" strokeLinecap="round" fill="none" />
-        </>
-      )}
-
-      {/* glasses frame — round, tortoise shell */}
-      <circle cx="49" cy="68" r="10" fill="none" stroke="#8B5E3C" strokeWidth="2.2" />
-      <circle cx="71" cy="68" r="10" fill="none" stroke="#8B5E3C" strokeWidth="2.2" />
-      <line x1="59" y1="68" x2="61" y2="68" stroke="#8B5E3C" strokeWidth="2" />
-      <line x1="28" y1="66" x2="39" y2="68" stroke="#8B5E3C" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="92" y1="66" x2="81" y2="68" stroke="#8B5E3C" strokeWidth="1.8" strokeLinecap="round" />
-      {/* lens glare */}
-      <path d="M43 63 Q45 61 48 63" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" fill="none" />
-      <path d="M65 63 Q67 61 70 63" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" fill="none" />
-
-      {/* eyes */}
-      <ellipse cx={49 + pupilX} cy={eyeDown ? 70 : 68} rx="4.5" ry={eyeDown ? 3.5 : 4.5} fill="#2A1F15" />
-      <ellipse cx={71 + pupilX} cy={eyeDown ? 70 : 68} rx="4.5" ry={eyeDown ? 3.5 : 4.5} fill="#2A1F15" />
-      <circle cx={47 + pupilX} cy={eyeDown ? 68.5 : 66.5} r="1.3" fill="white" />
-      <circle cx={69 + pupilX} cy={eyeDown ? 68.5 : 66.5} r="1.3" fill="white" />
-
-      {/* mouth */}
-      {smirkRight
-        ? <path d="M54 82 Q63 87 70 81" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="none" />
-        : <path d="M52 82 Q60 88 68 82" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="none" />
-      }
-    </g>
-  )
-}
-
+// Continuous narrative avatar: reading → coding → badminton, looping seamlessly
 function EricAvatar() {
-  const [stateIdx, setStateIdx] = useState(0)
-  const [hovered, setHovered] = useState(false)
   const [tick, setTick] = useState(0)
-  const current = AVATAR_STATES[stateIdx]
 
   useEffect(() => {
-    if (hovered) return
-    const t = setInterval(() => setStateIdx(i => (i + 1) % AVATAR_STATES.length), 3200)
-    return () => clearInterval(t)
-  }, [hovered])
-
-  // animation tick for breathing / bobbing
-  useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 60)
+    const t = setInterval(() => setTick(n => n + 1), 50)
     return () => clearInterval(t)
   }, [])
 
-  const t = tick * 0.06
-  const breathY = Math.sin(t) * 2.5           // gentle body bob
-  const armSwing = Math.sin(t * 1.2) * 5      // arm sway (badminton)
-  const pageFlip = Math.sin(t * 0.8) * 3      // page flutter (reading)
-  const typeTick = Math.floor(tick / 20) % 2  // cursor blink (coding)
+  // Total cycle: 600 ticks (~30s). Segments: 0-200 reading, 200-400 coding, 400-600 badminton
+  const CYCLE = 600
+  const raw = tick % CYCLE
+  const prog = raw / CYCLE  // 0..1
 
-  const SVG_W = 140
-  const SVG_H = 290
-  const VB = `0 0 ${SVG_W} ${SVG_H}`
+  // Scene weights: 0-0.33 reading, 0.33-0.66 coding, 0.66-1.0 badminton
+  // Smooth step for transitions
+  const smoothstep = (a, b, x) => {
+    const t = Math.max(0, Math.min(1, (x - a) / (b - a)))
+    return t * t * (3 - 2 * t)
+  }
 
-  // reading: holding book, eyes down, gentle sway
-  const readingScene = (
-    <svg width={SVG_W} height={SVG_H} viewBox={VB} fill="none"
-      style={{ filter: 'drop-shadow(0 12px 32px rgba(30,40,100,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
-      <AvatarDefs />
-      <ellipse cx="70" cy={SVG_H - 8} rx="42" ry="8" fill="rgba(0,0,0,0.10)" />
-      <g transform={`translate(0,${breathY})`}>
-        <Body3D armRaise={-18} armSwingL={-8} armSwingR={8} />
-        {/* book in arms */}
-        <g transform={`translate(${pageFlip * 0.5}, 0)`}>
-          <rect x="22" y="154" width="96" height="62" rx="6" fill="#4338CA" />
-          <rect x="22" y="154" width="47" height="62" rx="6" fill="#6D65F5" />
-          <line x1="69" y1="154" x2="69" y2="216" stroke="#3730A3" strokeWidth="2.5" />
-          {[162,170,178,186,194,202].map(y => (
-            <line key={y} x1="27" y1={y} x2="64" y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" />
-          ))}
-          {/* book spine highlight */}
-          <rect x="22" y="154" width="4" height="62" rx="2" fill="rgba(255,255,255,0.15)" />
-        </g>
-        <Head3D eyeDown />
-      </g>
-    </svg>
-  )
+  const readW  = smoothstep(0.30, 0.33, prog) === 0 && prog < 0.30 ? 1
+               : 1 - smoothstep(0.30, 0.36, prog)
+  const codeW  = smoothstep(0.30, 0.36, prog) - smoothstep(0.63, 0.69, prog)
+  const badW   = smoothstep(0.63, 0.69, prog) - (prog > 0.96 ? smoothstep(0.96, 1.0, prog) : 0)
 
-  // coding: laptop on lap, smirk, cursor blink
-  const codingScene = (
-    <svg width={SVG_W} height={SVG_H} viewBox={VB} fill="none"
-      style={{ filter: 'drop-shadow(0 12px 32px rgba(30,40,100,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
-      <AvatarDefs />
-      <ellipse cx="70" cy={SVG_H - 8} rx="42" ry="8" fill="rgba(0,0,0,0.10)" />
-      <g transform={`translate(0,${breathY * 0.5})`}>
-        <Body3D armSwingL={-6} armSwingR={6} />
-        {/* laptop resting on arms */}
-        <rect x="14" y="185" width="112" height="10" rx="4" fill="#374151" />
-        <rect x="20" y="148" width="100" height="42" rx="7" fill="#1E293B" />
-        <rect x="24" y="152" width="92" height="34" rx="4" fill="#0D1424" />
-        <text x="30" y="166" fontSize="6" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) => {'}</text>
-        <text x="30" y="175" fontSize="6" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
-        <text x="30" y="184" fontSize="6" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
-        <rect x="86" y="177" width="2" height="7" fill={typeTick ? '#A78BFA' : 'transparent'} />
-        <Head3D smirkRight />
-      </g>
-    </svg>
-  )
+  // Time in each scene (0..1 within that scene's window)
+  const readT  = prog < 0.33 ? prog / 0.33 : 0
+  const codeT  = prog >= 0.33 && prog < 0.66 ? (prog - 0.33) / 0.33 : 0
+  const badT   = prog >= 0.66 ? (prog - 0.66) / 0.34 : 0
 
-  // badminton: dynamic pose, racket raised
-  const badmintonScene = (
-    <svg width={SVG_W + 30} height={SVG_H} viewBox={`-10 0 ${SVG_W + 30} ${SVG_H}`} fill="none"
-      style={{ filter: 'drop-shadow(0 12px 32px rgba(255,107,53,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
-      <AvatarDefs />
-      <ellipse cx="70" cy={SVG_H - 8} rx="48" ry="9" fill="rgba(0,0,0,0.11)" />
-      <g transform={`translate(0,${Math.sin(t * 1.6) * 3})`}>
-        <Body3D armRaise={-30 - armSwing * 2} armSwingL={armSwing * 0.8} armSwingR={armSwing * 3} legSpread={Math.abs(armSwing) * 0.5} />
-        {/* headband */}
-        <rect x="28" y="58" width="64" height="9" rx="4.5" fill="#FF6B35" opacity="0.92" />
-        {/* racket — attached to right arm */}
-        <g transform={`rotate(${-35 - armSwing * 1.8}, 104, 130)`}>
-          {/* handle */}
-          <rect x="101" y="128" width="6" height="30" rx="3" fill="#FF6B35" />
-          {/* head */}
-          <ellipse cx="104" cy="104" rx="18" ry="24" fill="none" stroke="#C47A4A" strokeWidth="3" />
-          {/* strings */}
-          {[-12,-6,0,6,12].map(x => <line key={x} x1={104+x} y1="80" x2={104+x} y2="128" stroke="#C47A4A" strokeWidth="0.9" opacity="0.55" />)}
-          {[-18,-10,-2,6,14,22].map(y => <line key={y} x1="86" y1={104+y-20} x2="122" y2={104+y-20} stroke="#C47A4A" strokeWidth="0.9" opacity="0.55" />)}
-        </g>
-        {/* shuttlecock */}
-        <g transform={`translate(${Math.sin(t) * 6 + 110}, ${Math.cos(t * 1.3) * 6 + 40})`}>
-          <ellipse cx="0" cy="0" rx="6" ry="5" fill="white" stroke="#CCC" strokeWidth="1.2" />
-          <path d="M0 -5 L-9 -22 M0 -5 L0 -24 M0 -5 L9 -22" stroke="#DDD" strokeWidth="1.5" strokeLinecap="round" />
-        </g>
-        <Head3D eyebrowAngry mouthOpen />
-      </g>
-    </svg>
-  )
+  // Breathing + ambient motion
+  const T = tick * 0.07
+  const breathY   = Math.sin(T) * 2.2
+  const pageFlip  = Math.sin(T * 0.9) * 2.5
+  const typeTick  = Math.floor(tick / 16) % 2
+  const badBounce = Math.abs(Math.sin(T * 1.8)) * 4
+  const armSwing  = Math.sin(T * 1.4) * 6
+  const shuttleX  = Math.sin(T * 1.1) * 8
+  const shuttleY  = Math.cos(T * 0.9) * 6
 
-  const scenes = { reading: readingScene, coding: codingScene, badminton: badmintonScene }
+  // Desk: slides in from right for reading, slides out for coding
+  const deskX = readW > 0.05 ? 0 : -(1 - readW) * 80
+
+  // Laptop: appears for coding
+  const lapW = Math.max(0, codeW)
+
+  // Running stride for badminton
+  const strideL = Math.sin(T * 2.2) * 14 * badW
+  const strideR = -strideL
+
+  const SVG_W = 200
+  const SVG_H = 310
 
   return (
-    <div
-      className="animate-in"
-      style={{ position: 'relative', flexShrink: 0, cursor: 'pointer', userSelect: 'none' }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={() => setStateIdx(i => (i + 1) % AVATAR_STATES.length)}
-      title="点击切换状态"
-    >
-      <div style={{
-        width: 172, height: 220, borderRadius: 36,
-        background: 'linear-gradient(160deg, #f0f4ff 0%, #fff8f3 60%, #ffeee4 100%)',
-        border: '2px solid rgba(255,107,53,0.15)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 24px 64px rgba(99,102,241,0.12), 0 8px 24px rgba(255,107,53,0.10)',
-        transition: 'transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease',
-        transform: hovered ? 'scale(1.06) translateY(-4px)' : 'scale(1)',
-        overflow: 'hidden',
-      }}>
-        {/* state transition wrapper */}
-        <div key={current} style={{ animation: 'avatarIn 0.4s cubic-bezier(.34,1.56,.64,1) both' }}>
-          {scenes[current]}
-        </div>
-        <div style={{
-          fontSize: '0.6875rem', color: 'var(--accent)',
-          fontWeight: 600, letterSpacing: '0.03em', textAlign: 'center',
-          padding: '4px 12px', borderRadius: 99,
-          background: 'rgba(255,107,53,0.1)',
-          marginTop: 2,
-        }}>
-          {AVATAR_LABELS[current]}
-        </div>
-      </div>
-      <div style={{
-        position: 'absolute', inset: -10, borderRadius: 46,
-        border: '2px dashed rgba(255, 107, 53, 0.2)',
-        animation: 'spin 20s linear infinite',
-        pointerEvents: 'none',
-      }} />
-      <div style={{ position: 'absolute', bottom: -16, left: '50%', transform: 'translateX(-50%)', fontSize: '0.625rem', color: 'var(--muted)', whiteSpace: 'nowrap' }}>
-        点击切换 · {stateIdx + 1}/{AVATAR_STATES.length}
-      </div>
+    <div className="animate-in" style={{ flexShrink: 0, userSelect: 'none' }}>
+      <svg
+        width={SVG_W} height={SVG_H}
+        viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+        fill="none"
+        style={{ filter: 'drop-shadow(0 16px 40px rgba(30,40,100,0.18)) drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
+      >
+        <AvatarDefs />
+
+        {/* ground shadow */}
+        <ellipse cx="100" cy={SVG_H - 6} rx={48 + badW * 8} ry="7" fill="rgba(0,0,0,0.09)" />
+
+        {/* ── DESK (reading scene) ── */}
+        <g transform={`translate(${deskX}, 0)`} opacity={Math.max(0, readW)}>
+          {/* desk top */}
+          <rect x="10" y="192" width="140" height="10" rx="4" fill="#C8A882" />
+          <rect x="10" y="192" width="140" height="4" rx="4" fill="#DEB896" />
+          {/* desk legs */}
+          <rect x="18" y="202" width="8" height="52" rx="3" fill="#B89060" />
+          <rect x="134" y="202" width="8" height="52" rx="3" fill="#B89060" />
+          {/* book on desk */}
+          <g transform={`translate(${pageFlip * 0.3}, 0)`}>
+            <rect x="38" y="166" width="84" height="28" rx="4" fill="#4338CA" />
+            <rect x="38" y="166" width="40" height="28" rx="4" fill="#6D65F5" />
+            <line x1="78" y1="166" x2="78" y2="194" stroke="#3730A3" strokeWidth="2" />
+            {[173,180,187].map(y => (
+              <line key={y} x1="42" y1={y} x2="75" y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+            ))}
+            <rect x="38" y="166" width="3" height="28" rx="1.5" fill="rgba(255,255,255,0.18)" />
+          </g>
+          {/* small lamp */}
+          <line x1="128" y1="192" x2="126" y2="162" stroke="#8A7A6A" strokeWidth="3" strokeLinecap="round" />
+          <ellipse cx="121" cy="158" rx="14" ry="8" fill="#F5E6B0" opacity="0.9" />
+          <ellipse cx="121" cy="158" rx="14" ry="8" fill="none" stroke="#C8A882" strokeWidth="1.5" />
+          {/* lamp glow */}
+          <ellipse cx="121" cy="192" rx="18" ry="4" fill="rgba(255,230,120,0.18)" />
+        </g>
+
+        {/* ── BODY ── */}
+        <g transform={`translate(0, ${breathY * (1 - badW * 0.6) + badBounce * badW})`}>
+
+          {/* legs — running when badminton */}
+          {badW > 0.05 ? (
+            <>
+              {/* left leg running */}
+              <path d={`M68 188 Q${62 + strideL} 220 ${58 + strideL * 1.2} 264 Q${66 + strideL} 272 ${76 + strideL} 264 Q${80 + strideL} 220 76 188 Z`} fill="url(#jeansGrad)" />
+              {/* right leg running */}
+              <path d={`M92 188 Q${98 + strideR} 220 ${102 + strideR * 1.2} 264 Q${94 + strideR} 272 ${84 + strideR} 264 Q${80 + strideR} 220 84 188 Z`} fill="url(#jeansGrad)" />
+              {/* cuffs */}
+              <rect x={53 + strideL} y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
+              <rect x={79 + strideR} y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
+              {/* shoes */}
+              <ellipse cx={64 + strideL} cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
+              <rect x={50 + strideL} y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
+              <ellipse cx={64 + strideL} cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+              <ellipse cx={90 + strideR} cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
+              <rect x={76 + strideR} y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
+              <ellipse cx={90 + strideR} cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+            </>
+          ) : (
+            <>
+              {/* standing legs */}
+              <path d="M68 188 Q66 220 64 264 Q72 272 82 264 Q84 220 80 188 Z" fill="url(#jeansGrad)" />
+              <path d="M92 188 Q94 220 96 264 Q88 272 78 264 Q76 220 72 188 Z" fill="url(#jeansGrad)" />
+              <rect x="59" y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
+              <rect x="75" y="260" width="22" height="7" rx="2" fill="#5A5A6A" />
+              <ellipse cx="70" cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
+              <rect x="56" y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
+              <ellipse cx="70" cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+              <ellipse cx="90" cy="269" rx="14" ry="6" fill="url(#shoeGrad)" />
+              <rect x="76" y="263" width="28" height="9" rx="4" fill="url(#shoeGrad)" />
+              <ellipse cx="90" cy="271" rx="14" ry="3.5" fill="#0F1E50" />
+            </>
+          )}
+
+          {/* jacket body */}
+          <rect x="72" y="108" width="16" height="8" rx="3" fill="url(#teeGrad)" />
+          <path d="M56 120 Q54 162 58 190 Q72 196 80 196 Q88 196 102 190 Q106 162 104 120 Q90 110 80 108 Q70 110 56 120 Z" fill="url(#jacketGrad)" />
+          <path d="M56 120 Q54 162 58 190 Q72 196 80 194 L80 108 Q70 110 56 120 Z" fill="#152C60" opacity="0.28" />
+          {/* collar */}
+          <path d="M70 108 L76 126 L80 118 L80 108" fill="url(#teeGrad)" />
+          <path d="M90 108 L84 126 L80 118 L80 108" fill="url(#teeGrad)" />
+          {/* buttons */}
+          <circle cx="80" cy="138" r="1.8" fill="#1A2E60" />
+          <circle cx="80" cy="150" r="1.8" fill="#1A2E60" />
+          <circle cx="80" cy="162" r="1.8" fill="#1A2E60" />
+
+          {/* left arm */}
+          {badW > 0.05 ? (
+            /* badminton: left arm out for balance */
+            <path d={`M56 120 Q${42 + armSwing * 0.4} ${134} ${36 + armSwing * 0.6} ${162}`}
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          ) : readW > 0.1 ? (
+            /* reading: arm holds book from left */
+            <path d="M56 120 Q44 138 36 162"
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          ) : (
+            /* coding: arm rests on laptop */
+            <path d="M56 120 Q46 142 38 168"
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          )}
+          {/* left hand */}
+          <ellipse cx={badW > 0.05 ? 36 + armSwing * 0.6 : readW > 0.1 ? 36 : 38}
+                   cy={badW > 0.05 ? 164 : readW > 0.1 ? 164 : 170}
+                   rx="7" ry="5.5" fill="url(#skinGrad)" />
+
+          {/* right arm */}
+          {badW > 0.05 ? (
+            /* badminton: right arm raises with racket */
+            <path d={`M104 120 Q${118 - armSwing * 0.3} ${110 - armSwing} ${124 - armSwing * 0.4} ${86 - armSwing * 2}`}
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          ) : readW > 0.1 ? (
+            /* reading: right arm cradles book */
+            <path d="M104 120 Q116 138 122 164"
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          ) : (
+            /* coding: right arm on keyboard */
+            <path d="M104 120 Q114 142 120 168"
+              stroke="url(#jacketSide)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          )}
+          {/* right hand */}
+          <ellipse cx={badW > 0.05 ? 124 - armSwing * 0.4 : readW > 0.1 ? 122 : 120}
+                   cy={badW > 0.05 ? 84 - armSwing * 2 : readW > 0.1 ? 166 : 170}
+                   rx="7" ry="5.5" fill="url(#skinGrad)" />
+
+          {/* ── PROPS ── */}
+
+          {/* book (reading scene) */}
+          {readW > 0.05 && (
+            <g opacity={readW} transform={`translate(${pageFlip * 0.4}, 0)`}>
+              <rect x="34" y="155" width="88" height="50" rx="5" fill="#4338CA" />
+              <rect x="34" y="155" width="42" height="50" rx="5" fill="#6D65F5" />
+              <line x1="76" y1="155" x2="76" y2="205" stroke="#3730A3" strokeWidth="2" />
+              {[163,171,179,187,195].map(y => (
+                <line key={y} x1="38" y1={y} x2="73" y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+              ))}
+              <rect x="34" y="155" width="3.5" height="50" rx="1.5" fill="rgba(255,255,255,0.18)" />
+            </g>
+          )}
+
+          {/* laptop (coding scene) */}
+          {lapW > 0.05 && (
+            <g opacity={lapW}>
+              <rect x="28" y="188" width="104" height="9" rx="3.5" fill="#374151" />
+              <rect x="34" y="150" width="92" height="42" rx="6" fill="#1E293B" />
+              <rect x="38" y="154" width="84" height="30" rx="3.5" fill="#0D1424" />
+              <text x="43" y="166" fontSize="5.5" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) =>'}</text>
+              <text x="43" y="175" fontSize="5.5" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
+              <text x="43" y="183" fontSize="5.5" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
+              <rect x="98" y="176" width="2" height="6" fill={typeTick ? '#A78BFA' : 'transparent'} />
+            </g>
+          )}
+
+          {/* racket + shuttlecock (badminton scene) */}
+          {badW > 0.05 && (
+            <g opacity={badW}>
+              {/* headband */}
+              <rect x="48" y="56" width="64" height="8" rx="4" fill="#FF6B35" opacity="0.92" />
+              {/* racket attached to raised right hand */}
+              <g transform={`rotate(${-40 - armSwing * 1.5}, ${124 - armSwing * 0.4}, ${84 - armSwing * 2})`}>
+                <rect x={121 - armSwing * 0.4} y={82 - armSwing * 2} width="5" height="28" rx="2.5" fill="#FF6B35" />
+                <ellipse cx={123 - armSwing * 0.4} cy={62 - armSwing * 2} rx="16" ry="21" fill="none" stroke="#C47A4A" strokeWidth="2.8" />
+                {[-10,-4,2,8].map(x => <line key={x} x1={123 + x - armSwing * 0.4} y1={41 - armSwing * 2} x2={123 + x - armSwing * 0.4} y2={83 - armSwing * 2} stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
+                {[-14,-6,2,10,18].map(dy => <line key={dy} x1={107 - armSwing * 0.4} y1={62 + dy - armSwing * 2} x2={139 - armSwing * 0.4} y2={62 + dy - armSwing * 2} stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
+              </g>
+              {/* shuttlecock floating */}
+              <g transform={`translate(${140 + shuttleX}, ${44 + shuttleY})`}>
+                <ellipse cx="0" cy="0" rx="5.5" ry="4.5" fill="white" stroke="#CCC" strokeWidth="1" />
+                <path d="M0 -4.5 L-8 -20 M0 -4.5 L0 -22 M0 -4.5 L8 -20" stroke="#DDD" strokeWidth="1.4" strokeLinecap="round" />
+              </g>
+            </g>
+          )}
+
+          {/* ── HEAD ── */}
+          <Head3D
+            eyeDown={readW > 0.3}
+            smirkRight={codeW > 0.3}
+            eyebrowAngry={badW > 0.3}
+            mouthOpen={badW > 0.5}
+          />
+        </g>
+      </svg>
     </div>
   )
 }
