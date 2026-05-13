@@ -53,333 +53,75 @@ function SchoolLogo({ name, color }) {
   )
 }
 
-/* ── Q-version chibi avatar — single unified SVG coordinate space ── */
-// Layout: big head (r≈42) centered at (100,76), tiny body below at y=136
-// All drawn as one component so head and body share the same coordinate system
-function EricAvatar() {
+// Floating skill tag cloud for About section
+const SKILL_TAGS = [
+  { label: 'Deep Work', color: '#FF6B35', size: 1.15 },
+  { label: 'AI Tools', color: '#6366f1', size: 1.1 },
+  { label: 'TikTok Strategy', color: '#FF6B35', size: 1.0 },
+  { label: 'Content Ops', color: '#3D3D3D', size: 1.05 },
+  { label: 'Growth Experiments', color: '#6366f1', size: 0.95 },
+  { label: 'Claude Code', color: '#10b981', size: 1.0 },
+  { label: 'React + Vite', color: '#10b981', size: 0.9 },
+  { label: 'English · Fluent', color: '#3D3D3D', size: 1.0 },
+  { label: 'Global Business', color: '#FF6B35', size: 0.95 },
+  { label: 'Product Thinking', color: '#6366f1', size: 1.05 },
+  { label: 'Zero → One', color: '#FF6B35', size: 1.1 },
+  { label: 'Vibe Coding', color: '#10b981', size: 0.9 },
+]
+
+function SkillCloud() {
+  const [hovered, setHovered] = useState(null)
   const [tick, setTick] = useState(0)
   useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 50)
+    const t = setInterval(() => setTick(n => n + 1), 60)
     return () => clearInterval(t)
   }, [])
+  const T = tick * 0.022
 
-  // 720-tick cycle (~36s): reading → coding → badminton
-  const CYCLE = 720
-  const prog = (tick % CYCLE) / CYCLE
-  const ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x-a)/(b-a))); return t*t*(3-2*t) }
-
-  const readW = prog < 0.31 ? 1 : 1 - ss(0.31, 0.37, prog)
-  const codeW = ss(0.31, 0.37, prog) - ss(0.64, 0.70, prog)
-  const badW  = ss(0.64, 0.70, prog) - (prog > 0.96 ? ss(0.96, 1.0, prog) : 0)
-
-  const T = tick * 0.08
-  const breathY  = Math.sin(T) * 2.0
-  const nod      = readW > 0.5 ? Math.sin(T * 0.6) * 2 : 0
-  const pageFlip = Math.sin(T * 1.1) * 2.2
-  const typeTick = Math.floor(tick / 14) % 2
-  const bounce   = badW > 0.1 ? Math.abs(Math.sin(T * 2.0)) * 5 : 0
-  const armSwing = Math.sin(T * 1.5) * 8
-  const legSwing = Math.sin(T * 2.0) * 16
-  const shuttleX = Math.sin(T * 1.2) * 9
-  const shuttleY = Math.cos(T * 0.95) * 7
-
-  // Coordinate constants — everything derived from these
-  const HX = 100, HY = 76         // head center
-  const BY = 138                   // body top (neck joins here)
-  const BH = 46                    // body height
-  const BW = 36                    // body half-width
-  const LLX = 89, LRX = 111       // leg top x (left/right)
-  const LY  = BY + BH              // leg top y
-
-  // Reading: head bobs down slightly
-  const eyeDropY = readW > 0.45 ? 3 : 0
-  const eyeSquish = readW > 0.45 ? 0.65 : 1.0
-
+  // Arrange tags in a loose organic grid — 3 columns, offset rows
+  const cols = 3
+  const colW = 148
+  const rowH = 44
   return (
-    <div className="animate-in" style={{ flexShrink: 0, userSelect: 'none' }}>
-      <svg width="200" height="280" viewBox="0 0 200 280" fill="none"
-        style={{ filter: 'drop-shadow(0 14px 36px rgba(30,40,100,0.16)) drop-shadow(0 2px 6px rgba(0,0,0,0.09))' }}>
-        <defs>
-          <radialGradient id="qSkin" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#FFE4C8" />
-            <stop offset="70%" stopColor="#FCCFA8" />
-            <stop offset="100%" stopColor="#F0B98A" />
-          </radialGradient>
-          <radialGradient id="qHair" cx="38%" cy="28%" r="62%">
-            <stop offset="0%" stopColor="#6A5A4A" />
-            <stop offset="50%" stopColor="#4A3C2E" />
-            <stop offset="100%" stopColor="#2E2418" />
-          </radialGradient>
-          <linearGradient id="qJacket" x1="0%" y1="0%" x2="60%" y2="100%">
-            <stop offset="0%" stopColor="#3054A0" />
-            <stop offset="100%" stopColor="#182C68" />
-          </linearGradient>
-          <linearGradient id="qJeans" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#4A4A5E" />
-            <stop offset="100%" stopColor="#2C2C3A" />
-          </linearGradient>
-          <linearGradient id="qShoe" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#3058B0" />
-            <stop offset="100%" stopColor="#1A2E70" />
-          </linearGradient>
-          <radialGradient id="qBlush" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#F9907A" stopOpacity="0.52" />
-            <stop offset="100%" stopColor="#F9907A" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* ground shadow */}
-        <ellipse cx="100" cy="274" rx={38 + badW * 8} ry="5" fill="rgba(0,0,0,0.08)" />
-
-        {/* ── DESK behind character (reading scene) ── */}
-        {readW > 0.02 && (
-          <g opacity={readW} transform={`translate(${(1-readW)*-55}, 0)`}>
-            <rect x="28" y={BY+BH+10} width="144" height="9" rx="4" fill="#C8A070" />
-            <rect x="28" y={BY+BH+10} width="144" height="4" rx="3" fill="#DEB888" />
-            <rect x="36" y={BY+BH+19} width="7" height="42" rx="3" fill="#A87848" />
-            <rect x="157" y={BY+BH+19} width="7" height="42" rx="3" fill="#A87848" />
-          </g>
-        )}
-
-        {/* ── ALL CHARACTER PARTS — single breathing group ── */}
-        <g transform={`translate(0, ${breathY + bounce})`}>
-
-          {/* == LEGS (drawn behind body) == */}
-          {badW > 0.08 ? (
-            // running legs
-            <>
-              <path d={`M${LLX} ${LY} Q${LLX-3+legSwing} ${LY+22} ${LLX-2+legSwing*1.1} ${LY+46}`}
-                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
-              <path d={`M${LRX} ${LY} Q${LRX+3-legSwing} ${LY+22} ${LRX+2-legSwing*1.1} ${LY+46}`}
-                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
-              <ellipse cx={LLX-2+legSwing*1.1} cy={LY+51} rx="13" ry="6" fill="url(#qShoe)" />
-              <ellipse cx={LLX-2+legSwing*1.1} cy={LY+53} rx="13" ry="3" fill="#0F1C50" />
-              <ellipse cx={LRX+2-legSwing*1.1} cy={LY+51} rx="13" ry="6" fill="url(#qShoe)" />
-              <ellipse cx={LRX+2-legSwing*1.1} cy={LY+53} rx="13" ry="3" fill="#0F1C50" />
-            </>
-          ) : (
-            // standing legs
-            <>
-              <path d={`M${LLX} ${LY} Q${LLX-2} ${LY+22} ${LLX-2} ${LY+46}`}
-                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
-              <path d={`M${LRX} ${LY} Q${LRX+2} ${LY+22} ${LRX+2} ${LY+46}`}
-                stroke="url(#qJeans)" strokeWidth="18" strokeLinecap="round" fill="none" />
-              <rect x={LLX-11} y={LY+42} width="22" height="7" rx="3" fill="#52526A" />
-              <rect x={LRX-11} y={LY+42} width="22" height="7" rx="3" fill="#52526A" />
-              <ellipse cx={LLX-2} cy={LY+52} rx="13" ry="5.5" fill="url(#qShoe)" />
-              <ellipse cx={LLX-2} cy={LY+54} rx="13" ry="3" fill="#0F1C50" />
-              <ellipse cx={LRX+2} cy={LY+52} rx="13" ry="5.5" fill="url(#qShoe)" />
-              <ellipse cx={LRX+2} cy={LY+54} rx="13" ry="3" fill="#0F1C50" />
-            </>
-          )}
-
-          {/* == BODY (jacket) == */}
-          {/* collar strip */}
-          <rect x={HX-10} y={BY-2} width="20" height="10" rx="4" fill="#EEEAE2" />
-          {/* jacket shape */}
-          <path d={`M${HX-BW} ${BY+8} Q${HX-BW-5} ${BY+BH*0.55} ${HX-BW+2} ${BY+BH} Q${HX-8} ${BY+BH+7} ${HX} ${BY+BH+5} Q${HX+8} ${BY+BH+7} ${HX+BW-2} ${BY+BH} Q${HX+BW+5} ${BY+BH*0.55} ${HX+BW} ${BY+8} Q${HX+14} ${BY} ${HX} ${BY-2} Q${HX-14} ${BY} ${HX-BW} ${BY+8} Z`}
-            fill="url(#qJacket)" />
-          {/* jacket left shadow */}
-          <path d={`M${HX-BW} ${BY+8} Q${HX-BW-5} ${BY+BH*0.55} ${HX-BW+2} ${BY+BH} Q${HX-8} ${BY+BH+7} ${HX} ${BY+BH+5} L${HX} ${BY-2} Q${HX-14} ${BY} ${HX-BW} ${BY+8} Z`}
-            fill="#0F1E52" opacity="0.2" />
-          {/* collar V-notch */}
-          <path d={`M${HX-8} ${BY} L${HX-2} ${BY+14} L${HX} ${BY+8} L${HX} ${BY-2}`} fill="#EEEAE2" />
-          <path d={`M${HX+8} ${BY} L${HX+2} ${BY+14} L${HX} ${BY+8} L${HX} ${BY-2}`} fill="#EEEAE2" />
-          {/* buttons */}
-          {[BY+18, BY+30, BY+42].map(y => (
-            <circle key={y} cx={HX} cy={y} r="1.6" fill="#1A2860" />
-          ))}
-
-          {/* == ARMS == */}
-          {/* left arm */}
-          {badW > 0.08 ? (
-            <path d={`M${HX-BW} ${BY+10} Q${HX-BW-9+armSwing*0.3} ${BY+28} ${HX-BW-13+armSwing*0.5} ${BY+50}`}
-              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
-          ) : (
-            <path d={`M${HX-BW} ${BY+10} Q${HX-BW-8} ${BY+36} ${HX-BW-7} ${BY+58}`}
-              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
-          )}
-          {/* left hand */}
-          <circle
-            cx={badW > 0.08 ? HX-BW-13+armSwing*0.5 : HX-BW-7}
-            cy={badW > 0.08 ? BY+52 : BY+60}
-            r="7" fill="url(#qSkin)" />
-
-          {/* right arm */}
-          {badW > 0.08 ? (
-            <path d={`M${HX+BW} ${BY+10} Q${HX+BW+8-armSwing*0.2} ${BY+4-armSwing*1.0} ${HX+BW+14-armSwing*0.3} ${BY-16-armSwing*2.2}`}
-              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
-          ) : (
-            <path d={`M${HX+BW} ${BY+10} Q${HX+BW+8} ${BY+36} ${HX+BW+7} ${BY+58}`}
-              stroke="#1E3478" strokeWidth="16" strokeLinecap="round" fill="none" />
-          )}
-          {/* right hand */}
-          <circle
-            cx={badW > 0.08 ? HX+BW+14-armSwing*0.3 : HX+BW+7}
-            cy={badW > 0.08 ? BY-14-armSwing*2.2 : BY+60}
-            r="7" fill="url(#qSkin)" />
-
-          {/* == PROPS == */}
-
-          {/* Book held in arms (reading) */}
-          {readW > 0.05 && (
-            <g opacity={readW} transform={`translate(${pageFlip * 0.5}, 0)`}>
-              <rect x={HX-27} y={BY+48} width="54" height="36" rx="5" fill="#4338CA" />
-              <rect x={HX-27} y={BY+48} width="25" height="36" rx="5" fill="#6D65F5" />
-              <line x1={HX-2} y1={BY+48} x2={HX-2} y2={BY+84} stroke="#3730A3" strokeWidth="2" />
-              {[BY+57, BY+65, BY+73, BY+81].map(y => (
-                <line key={y} x1={HX-24} y1={y} x2={HX-5} y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth="0.9" />
-              ))}
-              <rect x={HX-27} y={BY+48} width="3" height="36" rx="1.5" fill="rgba(255,255,255,0.2)" />
-            </g>
-          )}
-
-          {/* Laptop on lap (coding) */}
-          {codeW > 0.05 && (
-            <g opacity={codeW}>
-              <rect x={HX-40} y={BY+BH+4} width="80" height="7" rx="3" fill="#2E3A4A" />
-              <rect x={HX-34} y={BY+BH-30} width="68" height="36" rx="5" fill="#1A2535" />
-              <rect x={HX-30} y={BY+BH-26} width="60" height="24" rx="3" fill="#0A1220" />
-              <text x={HX-26} y={BY+BH-14} fontSize="5" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) =>'}</text>
-              <text x={HX-26} y={BY+BH-6} fontSize="5" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
-              <text x={HX-26} y={BY+BH+2} fontSize="5" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
-              <rect x={HX+10} y={BY+BH-8} width="2" height="5" fill={typeTick ? '#A78BFA' : 'transparent'} />
-            </g>
-          )}
-
-          {/* Racket + shuttlecock (badminton) */}
-          {badW > 0.05 && (
-            <g opacity={badW}>
-              {/* headband arc over hair */}
-              <path d={`M${HX-28} ${HY-22} Q${HX} ${HY-50} ${HX+28} ${HY-22}`}
-                stroke="#FF6B35" strokeWidth="7" strokeLinecap="round" fill="none" />
-              {/* racket on raised right arm */}
-              <g transform={`rotate(${-38 - armSwing * 1.2}, ${HX+BW+14-armSwing*0.3}, ${BY-14-armSwing*2.2})`}>
-                <rect x={HX+BW+11-armSwing*0.3} y={BY-40-armSwing*2.2} width="5" height="24" rx="2.5" fill="#FF6B35" />
-                <ellipse cx={HX+BW+13-armSwing*0.3} cy={BY-58-armSwing*2.2} rx="14" ry="18" fill="none" stroke="#D06030" strokeWidth="2.5" />
-                {[-8,-2,4].map(x => (
-                  <line key={x}
-                    x1={HX+BW+13+x-armSwing*0.3} y1={BY-76-armSwing*2.2}
-                    x2={HX+BW+13+x-armSwing*0.3} y2={BY-40-armSwing*2.2}
-                    stroke="#D06030" strokeWidth="0.8" opacity="0.5" />
-                ))}
-                {[-10,-3,4,11].map(dy => (
-                  <line key={dy}
-                    x1={HX+BW-1-armSwing*0.3} y1={BY-58+dy-armSwing*2.2}
-                    x2={HX+BW+27-armSwing*0.3} y2={BY-58+dy-armSwing*2.2}
-                    stroke="#D06030" strokeWidth="0.8" opacity="0.5" />
-                ))}
-              </g>
-              {/* shuttlecock */}
-              <g transform={`translate(${HX+54+shuttleX}, ${HY-28+shuttleY})`}>
-                <ellipse cx="0" cy="0" rx="5" ry="4" fill="white" stroke="#CCC" strokeWidth="1" />
-                <path d="M0 -4 L-7 -18 M0 -4 L0 -20 M0 -4 L7 -18" stroke="#DDD" strokeWidth="1.3" strokeLinecap="round" />
-              </g>
-            </g>
-          )}
-
-          {/* == HEAD (big Q-version, drawn on top of everything) == */}
-          <g transform={`translate(0, ${nod})`}>
-            {/* neck */}
-            <rect x={HX-7} y={HY+38} width="14" height="14" rx="5" fill="url(#qSkin)" />
-
-            {/* back hair (behind head) */}
-            <ellipse cx={HX} cy={HY-4} rx="44" ry="30" fill="#2E2418" />
-            <ellipse cx={HX-38} cy={HY+8} rx="10" ry="20" fill="#2E2418" />
-            <ellipse cx={HX+38} cy={HY+8} rx="10" ry="20" fill="#2E2418" />
-
-            {/* head */}
-            <ellipse cx={HX} cy={HY} rx="40" ry="44" fill="url(#qSkin)" />
-
-            {/* cheeks */}
-            <ellipse cx={HX-27} cy={HY+15} rx="11" ry="8" fill="url(#qBlush)" />
-            <ellipse cx={HX+27} cy={HY+15} rx="11" ry="8" fill="url(#qBlush)" />
-
-            {/* nose */}
-            <ellipse cx={HX} cy={HY+17} rx="3" ry="2.2" fill="#E8AE88" opacity="0.65" />
-
-            {/* hair cap on top */}
-            <ellipse cx={HX} cy={HY-20} rx="37" ry="24" fill="url(#qHair)" />
-            {/* messy tufts */}
-            <path d={`M${HX-6} ${HY-40} Q${HX} ${HY-60} ${HX+6} ${HY-40}`} fill="url(#qHair)" />
-            <path d={`M${HX-20} ${HY-38} Q${HX-28} ${HY-56} ${HX-12} ${HY-36}`} fill="url(#qHair)" />
-            <path d={`M${HX+12} ${HY-38} Q${HX+28} ${HY-56} ${HX+20} ${HY-36}`} fill="url(#qHair)" />
-            <path d={`M${HX-30} ${HY-28} Q${HX-44} ${HY-44} ${HX-24} ${HY-24}`} fill="url(#qHair)" />
-            <path d={`M${HX+24} ${HY-28} Q${HX+44} ${HY-44} ${HX+30} ${HY-24}`} fill="url(#qHair)" />
-            {/* hair highlight */}
-            <ellipse cx={HX-10} cy={HY-30} rx="11" ry="5" fill="#8A7860" opacity="0.32" />
-
-            {/* ears */}
-            <ellipse cx={HX-40} cy={HY+6} rx="7" ry="9" fill="url(#qSkin)" />
-            <ellipse cx={HX-39} cy={HY+6} rx="4.5" ry="6.5" fill="#EFC4A0" />
-            <ellipse cx={HX+40} cy={HY+6} rx="7" ry="9" fill="url(#qSkin)" />
-            <ellipse cx={HX+39} cy={HY+6} rx="4.5" ry="6.5" fill="#EFC4A0" />
-
-            {/* eyebrows */}
-            {badW > 0.35 ? (
-              <>
-                <path d={`M${HX-22} ${HY-12} Q${HX-14} ${HY-19} ${HX-6} ${HY-12}`} stroke="#3A2C1E" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-                <path d={`M${HX+6} ${HY-12} Q${HX+14} ${HY-19} ${HX+22} ${HY-12}`} stroke="#3A2C1E" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-              </>
-            ) : (
-              <>
-                <path d={`M${HX-22} ${HY-14} Q${HX-14} ${HY-21} ${HX-6} ${HY-14}`} stroke="#3A2C1E" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-                <path d={`M${HX+6} ${HY-14} Q${HX+14} ${HY-21} ${HX+22} ${HY-14}`} stroke="#3A2C1E" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-              </>
-            )}
-
-            {/* glasses — chunky round chibi frames */}
-            <circle cx={HX-14} cy={HY-2} r="12" fill="rgba(180,220,255,0.07)" stroke="#1A1828" strokeWidth="2.6" />
-            <circle cx={HX+14} cy={HY-2} r="12" fill="rgba(180,220,255,0.07)" stroke="#1A1828" strokeWidth="2.6" />
-            <path d={`M${HX-2} ${HY-2} Q${HX} ${HY-4} ${HX+2} ${HY-2}`} stroke="#1A1828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <line x1={HX-40} y1={HY-4} x2={HX-26} y2={HY-2} stroke="#1A1828" strokeWidth="2" strokeLinecap="round" />
-            <line x1={HX+40} y1={HY-4} x2={HX+26} y2={HY-2} stroke="#1A1828" strokeWidth="2" strokeLinecap="round" />
-            <path d={`M${HX-22} ${HY-8} Q${HX-18} ${HY-12} ${HX-14} ${HY-8}`} stroke="rgba(255,255,255,0.7)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-            <path d={`M${HX+6} ${HY-8} Q${HX+10} ${HY-12} ${HX+14} ${HY-8}`} stroke="rgba(255,255,255,0.7)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-
-            {/* eyes */}
-            {badW > 0.5 ? (
-              <>
-                <ellipse cx={HX-14} cy={HY-1} rx="5.5" ry="5.5" fill="#1E1608" />
-                <ellipse cx={HX+14} cy={HY-1} rx="5.5" ry="5.5" fill="#1E1608" />
-                <ellipse cx={HX-14} cy={HY-1} rx="3" ry="3" fill="#6B4C28" />
-                <ellipse cx={HX+14} cy={HY-1} rx="3" ry="3" fill="#6B4C28" />
-                <circle cx={HX-16} cy={HY-3} r="1.6" fill="white" />
-                <circle cx={HX+12} cy={HY-3} r="1.6" fill="white" />
-              </>
-            ) : readW > 0.45 ? (
-              <>
-                <ellipse cx={HX-14} cy={HY-1+eyeDropY} rx="5" ry={3.5*eyeSquish+1.5} fill="#1E1608" />
-                <ellipse cx={HX+14} cy={HY-1+eyeDropY} rx="5" ry={3.5*eyeSquish+1.5} fill="#1E1608" />
-                <ellipse cx={HX-14} cy={HY-1+eyeDropY} rx="3" ry={2.2*eyeSquish+1} fill="#6B4C28" />
-                <ellipse cx={HX+14} cy={HY-1+eyeDropY} rx="3" ry={2.2*eyeSquish+1} fill="#6B4C28" />
-                <circle cx={HX-16} cy={HY-3+eyeDropY} r="1.3" fill="white" />
-                <circle cx={HX+12} cy={HY-3+eyeDropY} r="1.3" fill="white" />
-              </>
-            ) : (
-              <>
-                <ellipse cx={HX-14} cy={HY-1} rx="5" ry="5.5" fill="#1E1608" />
-                <ellipse cx={HX+14} cy={HY-1} rx="5" ry="5.5" fill="#1E1608" />
-                <ellipse cx={HX-14} cy={HY-1} rx="3" ry="3.5" fill="#6B4C28" />
-                <ellipse cx={HX+14} cy={HY-1} rx="3" ry="3.5" fill="#6B4C28" />
-                <circle cx={HX-16} cy={HY-3} r="1.6" fill="white" />
-                <circle cx={HX+12} cy={HY-3} r="1.6" fill="white" />
-              </>
-            )}
-
-            {/* mouth */}
-            {badW > 0.5
-              ? <path d={`M${HX-10} ${HY+22} Q${HX} ${HY+34} ${HX+10} ${HY+22}`} stroke="#C07848" strokeWidth="2" strokeLinecap="round" fill="#F4A080" />
-              : codeW > 0.4
-              ? <path d={`M${HX-8} ${HY+22} Q${HX+4} ${HY+30} ${HX+10} ${HY+23}`} stroke="#C07848" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              : <path d={`M${HX-8} ${HY+22} Q${HX} ${HY+30} ${HX+8} ${HY+22}`} stroke="#C07848" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            }
-          </g>
-        </g>
-      </svg>
+    <div style={{ position: 'relative', width: 200, flexShrink: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+        {SKILL_TAGS.map((tag, i) => {
+          const floatY = Math.sin(T + i * 0.9) * 3
+          const isHov = hovered === i
+          return (
+            <div
+              key={tag.label}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '5px 13px',
+                borderRadius: 99,
+                fontSize: `${0.78 * tag.size}rem`,
+                fontWeight: isHov ? 700 : 600,
+                letterSpacing: '0.01em',
+                background: isHov ? tag.color : `${tag.color}12`,
+                color: isHov ? '#fff' : tag.color,
+                border: `1.5px solid ${tag.color}40`,
+                transform: `translateY(${floatY}px) scale(${isHov ? 1.06 : 1})`,
+                transition: 'background 0.2s, color 0.2s, transform 0.18s, font-weight 0.1s',
+                cursor: 'default',
+                userSelect: 'none',
+                alignSelf: i % 2 === 1 ? 'flex-end' : 'flex-start',
+                boxShadow: isHov ? `0 4px 16px ${tag.color}40` : 'none',
+              }}
+            >
+              {tag.label}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
+
 
 
 const timeline = [
@@ -656,7 +398,7 @@ export default function Home() {
                       </footer>
                     </blockquote>
                   </div>
-                  <EricAvatar />
+                  <SkillCloud />
                 </div>
                 <div className="animate-in" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 44 }}>
                   {['国际商务硕士', '英语流利', 'AI 工具用户', '内容运营', '海外市场'].map(tag => (
