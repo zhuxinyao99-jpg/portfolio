@@ -56,9 +56,238 @@ function SchoolLogo({ name, color }) {
 const AVATAR_STATES = ['reading', 'coding', 'badminton']
 const AVATAR_LABELS = { reading: '📖 深度阅读中', coding: '⌨️ Vibe Coding', badminton: '🏸 打羽毛球' }
 
-/* ── Reusable 3D head (glasses + hair + face) ── */
-function Head3D({ eyeDown = false, smirkRight = false, lookLeft = false, eyebrowAngry = false }) {
-  const pupilX = lookLeft ? -1.5 : 0
+/* ── SVG defs shared across all avatar states ── */
+function AvatarDefs() {
+  return (
+    <defs>
+      {/* skin */}
+      <radialGradient id="skinGrad" cx="45%" cy="38%" r="55%">
+        <stop offset="0%" stopColor="#FFECD6" />
+        <stop offset="60%" stopColor="#FDDCBC" />
+        <stop offset="100%" stopColor="#F0B98A" />
+      </radialGradient>
+      {/* skin shadow */}
+      <radialGradient id="skinShadow" cx="60%" cy="55%" r="50%">
+        <stop offset="0%" stopColor="#F0B98A" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="#F0B98A" stopOpacity="0" />
+      </radialGradient>
+      {/* hair */}
+      <radialGradient id="hairGrad" cx="40%" cy="30%" r="60%">
+        <stop offset="0%" stopColor="#7A6A5A" />
+        <stop offset="40%" stopColor="#5C4E3E" />
+        <stop offset="100%" stopColor="#3A2E22" />
+      </radialGradient>
+      {/* jacket */}
+      <linearGradient id="jacketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#2D4A8A" />
+        <stop offset="50%" stopColor="#1E3A7A" />
+        <stop offset="100%" stopColor="#152C60" />
+      </linearGradient>
+      <linearGradient id="jacketSide" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#152C60" />
+        <stop offset="100%" stopColor="#1E3A7A" />
+      </linearGradient>
+      {/* jeans */}
+      <linearGradient id="jeansGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4A4A5A" />
+        <stop offset="100%" stopColor="#2E2E3A" />
+      </linearGradient>
+      {/* shoe */}
+      <linearGradient id="shoeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#2A4A9A" />
+        <stop offset="100%" stopColor="#1A2E6A" />
+      </linearGradient>
+      {/* white tee */}
+      <linearGradient id="teeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#F8F8F2" />
+        <stop offset="100%" stopColor="#E8E8DC" />
+      </linearGradient>
+      {/* cheek blush */}
+      <radialGradient id="blushL" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#F4A07A" stopOpacity="0.5" />
+        <stop offset="100%" stopColor="#F4A07A" stopOpacity="0" />
+      </radialGradient>
+      <radialGradient id="blushR" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#F4A07A" stopOpacity="0.5" />
+        <stop offset="100%" stopColor="#F4A07A" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+  )
+}
+
+/* ── Shared head: design-ref accurate ── */
+function Head3D({ eyeDown = false, smirkRight = false, eyebrowAngry = false, eyesClosed = false, mouthOpen = false, offsetX = 0 }) {
+  return (
+    <g transform={`translate(${offsetX}, 0)`}>
+      {/* neck */}
+      <rect x="53" y="94" width="14" height="16" rx="5" fill="url(#skinGrad)" />
+      <rect x="57" y="94" width="4" height="16" fill="#E8C4A0" opacity="0.4" />
+
+      {/* head base shadow (3D depth) */}
+      <ellipse cx="64" cy="66" rx="32" ry="32" fill="#DFA870" opacity="0.25" />
+      {/* head */}
+      <ellipse cx="60" cy="64" rx="32" ry="32" fill="url(#skinGrad)" />
+      {/* face volume shadow */}
+      <ellipse cx="60" cy="64" rx="32" ry="32" fill="url(#skinShadow)" />
+      {/* cheek highlight */}
+      <ellipse cx="38" cy="72" rx="9" ry="6" fill="url(#blushL)" />
+      <ellipse cx="82" cy="72" rx="9" ry="6" fill="url(#blushR)" />
+      {/* nose */}
+      <ellipse cx="60" cy="74" rx="3.5" ry="2.5" fill="#E8B090" opacity="0.7" />
+
+      {/* ── HAIR ── layered for volume */}
+      {/* back hair mass */}
+      <ellipse cx="60" cy="40" rx="33" ry="22" fill="#3A2E22" />
+      {/* side hair left */}
+      <ellipse cx="29" cy="60" rx="8" ry="16" fill="#3A2E22" />
+      {/* side hair right */}
+      <ellipse cx="91" cy="60" rx="8" ry="16" fill="#3A2E22" />
+      {/* hair main top */}
+      <ellipse cx="60" cy="36" rx="30" ry="20" fill="url(#hairGrad)" />
+      {/* messy tufts — design ref shows spiky layered hair */}
+      <path d="M32 44 Q28 28 38 24 Q44 18 50 26 Q50 16 58 14 Q66 12 68 22 Q72 14 80 18 Q88 22 84 34 Q90 28 92 38" fill="url(#hairGrad)" />
+      {/* hair highlight */}
+      <ellipse cx="52" cy="28" rx="10" ry="5" fill="#8A7A66" opacity="0.5" />
+      {/* side tuft left over ear */}
+      <path d="M28 52 Q22 44 28 38 Q32 34 36 42" fill="url(#hairGrad)" />
+
+      {/* ears */}
+      <ellipse cx="28" cy="66" rx="6" ry="8" fill="url(#skinGrad)" />
+      <ellipse cx="29" cy="66" rx="4" ry="6" fill="#EDBA95" />
+      <ellipse cx="92" cy="66" rx="6" ry="8" fill="url(#skinGrad)" />
+      <ellipse cx="91" cy="66" rx="4" ry="6" fill="#EDBA95" />
+
+      {/* ── EYEBROWS ── */}
+      {eyebrowAngry ? (
+        <>
+          <path d="M40 49 Q47 46 53 50" stroke="#4A3828" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d="M67 50 Q73 46 80 49" stroke="#4A3828" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        </>
+      ) : (
+        <>
+          <path d="M40 50 Q47 47 53 50" stroke="#4A3828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+          <path d="M67 50 Q73 47 80 50" stroke="#4A3828" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+        </>
+      )}
+
+      {/* ── GLASSES ── large round frames, design ref */}
+      {/* left lens */}
+      <circle cx="47" cy="63" r="13" fill="rgba(180,220,255,0.08)" stroke="#1A1A2A" strokeWidth="2.8" />
+      {/* right lens */}
+      <circle cx="73" cy="63" r="13" fill="rgba(180,220,255,0.08)" stroke="#1A1A2A" strokeWidth="2.8" />
+      {/* bridge */}
+      <path d="M60 63 L60 63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="60" y1="63" x2="60" y2="63" stroke="#1A1A2A" strokeWidth="2" />
+      <path d="M55 63 Q60 61 65 63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      {/* temples */}
+      <line x1="28" y1="61" x2="34" y2="63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="92" y1="61" x2="86" y2="63" stroke="#1A1A2A" strokeWidth="2.2" strokeLinecap="round" />
+      {/* lens glare */}
+      <path d="M41 57 Q44 55 47 57" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path d="M67 57 Q70 55 73 57" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+
+      {/* ── EYES ── */}
+      {eyesClosed ? (
+        <>
+          <path d="M42 64 Q47 68 52 64" stroke="#3A2E22" strokeWidth="2" strokeLinecap="round" fill="none" />
+          <path d="M68 64 Q73 68 78 64" stroke="#3A2E22" strokeWidth="2" strokeLinecap="round" fill="none" />
+        </>
+      ) : (
+        <>
+          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="5.5" ry={eyeDown ? 4 : 5.5} fill="#2A2010" />
+          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="5.5" ry={eyeDown ? 4 : 5.5} fill="#2A2010" />
+          {/* iris */}
+          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="3.5" ry={eyeDown ? 2.8 : 3.5} fill="#6B4E2A" />
+          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="3.5" ry={eyeDown ? 2.8 : 3.5} fill="#6B4E2A" />
+          {/* pupil */}
+          <ellipse cx="47" cy={eyeDown ? 65 : 63} rx="2" ry={eyeDown ? 1.8 : 2} fill="#1A1008" />
+          <ellipse cx="73" cy={eyeDown ? 65 : 63} rx="2" ry={eyeDown ? 1.8 : 2} fill="#1A1008" />
+          {/* catchlight */}
+          <circle cx="45.5" cy={eyeDown ? 63.5 : 61.5} r="1.4" fill="white" />
+          <circle cx="71.5" cy={eyeDown ? 63.5 : 61.5} r="1.4" fill="white" />
+        </>
+      )}
+
+      {/* ── MOUTH ── */}
+      {mouthOpen
+        ? <path d="M49 82 Q60 92 71 82" stroke="#C47A4A" strokeWidth="2" strokeLinecap="round" fill="#F4A07A" />
+        : smirkRight
+        ? <path d="M51 82 Q62 89 70 83" stroke="#C47A4A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+        : <path d="M50 82 Q60 90 70 82" stroke="#C47A4A" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      }
+    </g>
+  )
+}
+
+/* ── Shared body: design-ref accurate ── */
+function Body3D({ armRaise = 0, armSwingL = 0, armSwingR = 0, legSpread = 0 }) {
+  return (
+    <g>
+      {/* white tee — visible at collar */}
+      <rect x="44" y="108" width="32" height="10" rx="4" fill="url(#teeGrad)" />
+      {/* jacket body */}
+      <path d="M30 120 Q28 160 32 188 Q46 194 60 194 Q74 194 88 188 Q92 160 90 120 Q76 110 60 108 Q44 110 30 120 Z" fill="url(#jacketGrad)" />
+      {/* jacket left panel shadow */}
+      <path d="M30 120 Q28 160 32 188 Q46 194 60 194 L60 108 Q44 110 30 120 Z" fill="#152C60" opacity="0.3" />
+      {/* jacket collar left */}
+      <path d="M44 108 L52 128 L60 120 L60 108" fill="url(#teeGrad)" />
+      {/* jacket collar right */}
+      <path d="M76 108 L68 128 L60 120 L60 108" fill="url(#teeGrad)" />
+      {/* jacket buttons */}
+      <circle cx="60" cy="135" r="2" fill="#1A2E60" />
+      <circle cx="60" cy="148" r="2" fill="#1A2E60" />
+      <circle cx="60" cy="161" r="2" fill="#1A2E60" />
+      {/* jacket left sleeve */}
+      <path
+        d={`M30 120 Q${20 - armSwingL} ${130 + armRaise} ${16 - armSwingL} ${160 + armRaise}`}
+        stroke="url(#jacketSide)" strokeWidth="20" strokeLinecap="round" fill="none"
+      />
+      {/* left hand */}
+      <ellipse cx={16 - armSwingL} cy={162 + armRaise} rx="8" ry="6" fill="url(#skinGrad)" transform={`rotate(${-10 - armSwingL * 0.5} ${16 - armSwingL} ${162 + armRaise})`} />
+      {/* jacket right sleeve */}
+      <path
+        d={`M90 120 Q${100 + armSwingR} ${130} ${104 + armSwingR} ${158}`}
+        stroke="url(#jacketSide)" strokeWidth="20" strokeLinecap="round" fill="none"
+      />
+      {/* right hand */}
+      <ellipse cx={104 + armSwingR} cy={160} rx="8" ry="6" fill="url(#skinGrad)" transform={`rotate(${10 + armSwingR * 0.5} ${104 + armSwingR} 160)`} />
+
+      {/* ── JEANS ── */}
+      {/* left leg */}
+      <path d={`M32 188 Q${30 - legSpread} 220 ${28 - legSpread} 260 Q${36 - legSpread} 268 ${46 - legSpread} 260 Q${50 - legSpread} 220 52 188 Z`} fill="url(#jeansGrad)" />
+      {/* right leg */}
+      <path d={`M88 188 Q${90 + legSpread} 220 ${92 + legSpread} 260 Q${84 + legSpread} 268 ${74 + legSpread} 260 Q${70 + legSpread} 220 68 188 Z`} fill="url(#jeansGrad)" />
+      {/* cuffed hems left */}
+      <rect x={23 - legSpread} y="256" width="24" height="8" rx="2" fill="#5A5A6A" />
+      {/* cuffed hems right */}
+      <rect x={69 + legSpread} y="256" width="24" height="8" rx="2" fill="#5A5A6A" />
+      {/* jean highlight */}
+      <rect x="44" y="192" width="6" height="60" rx="3" fill="rgba(255,255,255,0.08)" />
+      <rect x="70" y="192" width="6" height="60" rx="3" fill="rgba(255,255,255,0.08)" />
+
+      {/* ── SHOES ── canvas sneakers, design ref blue */}
+      {/* left shoe */}
+      <ellipse cx={35 - legSpread} cy={268} rx="16" ry="7" fill="url(#shoeGrad)" />
+      <rect x={19 - legSpread} y={261} width="32" height="10" rx="5" fill="url(#shoeGrad)" />
+      {/* shoe sole left */}
+      <ellipse cx={35 - legSpread} cy={270} rx="16" ry="4" fill="#0F1E50" />
+      {/* laces left */}
+      <line x1={26 - legSpread} y1="264" x2={44 - legSpread} y2="264" stroke="white" strokeWidth="1.2" opacity="0.7" />
+      <line x1={27 - legSpread} y1="267" x2={43 - legSpread} y2="267" stroke="white" strokeWidth="1.2" opacity="0.7" />
+      {/* right shoe */}
+      <ellipse cx={85 + legSpread} cy={268} rx="16" ry="7" fill="url(#shoeGrad)" />
+      <rect x={69 + legSpread} y={261} width="32" height="10" rx="5" fill="url(#shoeGrad)" />
+      <ellipse cx={85 + legSpread} cy={270} rx="16" ry="4" fill="#0F1E50" />
+      <line x1={76 + legSpread} y1="264" x2={94 + legSpread} y2="264" stroke="white" strokeWidth="1.2" opacity="0.7" />
+      <line x1={77 + legSpread} y1="267" x2={93 + legSpread} y2="267" stroke="white" strokeWidth="1.2" opacity="0.7" />
+    </g>
+  )
+}
+
+function _unused_Head3D_stub() {
+  return null
+  // kept to avoid edit offset issues — delete if refactoring
+  const pupilX = 0
   return (
     <g>
       {/* neck */}
@@ -149,118 +378,86 @@ function EricAvatar() {
   const pageFlip = Math.sin(t * 0.8) * 3      // page flutter (reading)
   const typeTick = Math.floor(tick / 20) % 2  // cursor blink (coding)
 
-  const scenes = {
-    reading: (
-      <svg width="160" height="200" viewBox="0 0 120 200" fill="none" style={{ filter: 'drop-shadow(0 8px 24px rgba(99,102,241,0.18))' }}>
-        {/* floor shadow */}
-        <ellipse cx="60" cy="192" rx="38" ry="7" fill="rgba(0,0,0,0.10)" />
-        {/* body — navy jacket */}
-        <g transform={`translate(0, ${breathY})`}>
-          {/* jacket shadow side */}
-          <rect x="38" y="106" width="46" height="52" rx="14" fill="#1A2B5E" />
-          {/* jacket main */}
-          <rect x="34" y="104" width="46" height="52" rx="14" fill="#223A7A" />
-          {/* jacket lapels */}
-          <path d="M56 104 L50 120 L60 116 L70 120 L64 104" fill="#F5F5F0" />
-          {/* legs */}
-          <rect x="38" y="148" width="16" height="42" rx="8" fill="#2D2D3D" />
-          <rect x="56" y="148" width="16" height="42" rx="8" fill="#2D2D3D" />
-          {/* shoes */}
-          <ellipse cx="46" cy="190" rx="10" ry="5" fill="#1A1A2A" />
-          <ellipse cx="64" cy="190" rx="10" ry="5" fill="#1A1A2A" />
-          {/* left arm holding book */}
-          <rect x="14" y="108" width="24" height="12" rx="6" fill="#223A7A" transform="rotate(25 14 108)" />
-          <ellipse cx="18" cy="128" rx="7" ry="5" fill="#FDDCBC" />
-          {/* right arm holding book */}
-          <rect x="84" y="108" width="24" height="12" rx="6" fill="#223A7A" transform="rotate(-25 108 108)" />
-          <ellipse cx="103" cy="128" rx="7" ry="5" fill="#FDDCBC" />
-          {/* book body */}
-          <rect x={20 + pageFlip} y="124" width="80" height="52" rx="5" fill="#4F46E5" />
-          <rect x={20 + pageFlip} y="124" width="39" height="52" rx="5" fill="#818CF8" />
-          <line x1={60 + pageFlip} y1="124" x2={60 + pageFlip} y2="176" stroke="#3730A3" strokeWidth="2" />
-          {/* page lines */}
-          {[130, 138, 146, 154, 162].map(y => (
-            <line key={y} x1={25 + pageFlip} y1={y} x2={55 + pageFlip} y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+  const SVG_W = 140
+  const SVG_H = 290
+  const VB = `0 0 ${SVG_W} ${SVG_H}`
+
+  // reading: holding book, eyes down, gentle sway
+  const readingScene = (
+    <svg width={SVG_W} height={SVG_H} viewBox={VB} fill="none"
+      style={{ filter: 'drop-shadow(0 12px 32px rgba(30,40,100,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
+      <AvatarDefs />
+      <ellipse cx="70" cy={SVG_H - 8} rx="42" ry="8" fill="rgba(0,0,0,0.10)" />
+      <g transform={`translate(0,${breathY})`}>
+        <Body3D armRaise={-18} armSwingL={-8} armSwingR={8} />
+        {/* book in arms */}
+        <g transform={`translate(${pageFlip * 0.5}, 0)`}>
+          <rect x="22" y="154" width="96" height="62" rx="6" fill="#4338CA" />
+          <rect x="22" y="154" width="47" height="62" rx="6" fill="#6D65F5" />
+          <line x1="69" y1="154" x2="69" y2="216" stroke="#3730A3" strokeWidth="2.5" />
+          {[162,170,178,186,194,202].map(y => (
+            <line key={y} x1="27" y1={y} x2="64" y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" />
           ))}
-          <Head3D eyeDown />
+          {/* book spine highlight */}
+          <rect x="22" y="154" width="4" height="62" rx="2" fill="rgba(255,255,255,0.15)" />
         </g>
-      </svg>
-    ),
-    coding: (
-      <svg width="160" height="200" viewBox="0 0 120 200" fill="none" style={{ filter: 'drop-shadow(0 8px 24px rgba(99,102,241,0.18))' }}>
-        <ellipse cx="60" cy="192" rx="38" ry="7" fill="rgba(0,0,0,0.10)" />
-        <g transform={`translate(0, ${breathY * 0.6})`}>
-          {/* hoodie — dark */}
-          <rect x="36" y="106" width="48" height="52" rx="14" fill="#111827" />
-          {/* hoodie pocket */}
-          <rect x="46" y="134" width="28" height="16" rx="6" fill="#1F2937" />
-          {/* hoodie strings */}
-          <line x1="56" y1="108" x2="52" y2="124" stroke="#374151" strokeWidth="2" strokeLinecap="round" />
-          <line x1="64" y1="108" x2="68" y2="124" stroke="#374151" strokeWidth="2" strokeLinecap="round" />
-          {/* legs */}
-          <rect x="38" y="148" width="16" height="42" rx="8" fill="#1F2937" />
-          <rect x="56" y="148" width="16" height="42" rx="8" fill="#1F2937" />
-          <ellipse cx="46" cy="190" rx="10" ry="5" fill="#111827" />
-          <ellipse cx="64" cy="190" rx="10" ry="5" fill="#111827" />
-          {/* arms resting on laptop */}
-          <rect x="16" y="130" width="28" height="10" rx="5" fill="#111827" transform="rotate(-8 16 130)" />
-          <ellipse cx="18" cy="142" rx="8" ry="5" fill="#FDDCBC" />
-          <rect x="76" y="130" width="28" height="10" rx="5" fill="#111827" transform="rotate(8 104 130)" />
-          <ellipse cx="103" cy="142" rx="8" ry="5" fill="#FDDCBC" />
-          {/* laptop base */}
-          <rect x="10" y="148" width="100" height="8" rx="3" fill="#374151" />
-          {/* laptop screen */}
-          <rect x="18" y="108" width="84" height="44" rx="5" fill="#1E293B" />
-          <rect x="21" y="111" width="78" height="38" rx="3" fill="#0F172A" />
-          {/* code lines */}
-          <text x="26" y="122" fontSize="5.5" fill="#A78BFA" fontFamily="monospace">const eric = {'() =>'} {'{'}</text>
-          <text x="26" y="130" fontSize="5.5" fill="#6EE7B7" fontFamily="monospace">  build(ideas)</text>
-          <text x="26" y="138" fontSize="5.5" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
-          {/* blinking cursor */}
-          <rect x="48" y="132" width="1.5" height="6" fill={typeTick ? '#A78BFA' : 'transparent'} />
-          <Head3D smirkRight />
+        <Head3D eyeDown />
+      </g>
+    </svg>
+  )
+
+  // coding: laptop on lap, smirk, cursor blink
+  const codingScene = (
+    <svg width={SVG_W} height={SVG_H} viewBox={VB} fill="none"
+      style={{ filter: 'drop-shadow(0 12px 32px rgba(30,40,100,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
+      <AvatarDefs />
+      <ellipse cx="70" cy={SVG_H - 8} rx="42" ry="8" fill="rgba(0,0,0,0.10)" />
+      <g transform={`translate(0,${breathY * 0.5})`}>
+        <Body3D armSwingL={-6} armSwingR={6} />
+        {/* laptop resting on arms */}
+        <rect x="14" y="185" width="112" height="10" rx="4" fill="#374151" />
+        <rect x="20" y="148" width="100" height="42" rx="7" fill="#1E293B" />
+        <rect x="24" y="152" width="92" height="34" rx="4" fill="#0D1424" />
+        <text x="30" y="166" fontSize="6" fill="#A78BFA" fontFamily="monospace">{'const build = (idea) => {'}</text>
+        <text x="30" y="175" fontSize="6" fill="#6EE7B7" fontFamily="monospace">{'  return ship(idea)'}</text>
+        <text x="30" y="184" fontSize="6" fill="#FDE68A" fontFamily="monospace">{'}'}</text>
+        <rect x="86" y="177" width="2" height="7" fill={typeTick ? '#A78BFA' : 'transparent'} />
+        <Head3D smirkRight />
+      </g>
+    </svg>
+  )
+
+  // badminton: dynamic pose, racket raised
+  const badmintonScene = (
+    <svg width={SVG_W + 30} height={SVG_H} viewBox={`-10 0 ${SVG_W + 30} ${SVG_H}`} fill="none"
+      style={{ filter: 'drop-shadow(0 12px 32px rgba(255,107,53,0.22)) drop-shadow(0 2px 8px rgba(0,0,0,0.12))' }}>
+      <AvatarDefs />
+      <ellipse cx="70" cy={SVG_H - 8} rx="48" ry="9" fill="rgba(0,0,0,0.11)" />
+      <g transform={`translate(0,${Math.sin(t * 1.6) * 3})`}>
+        <Body3D armRaise={-30 - armSwing * 2} armSwingL={armSwing * 0.8} armSwingR={armSwing * 3} legSpread={Math.abs(armSwing) * 0.5} />
+        {/* headband */}
+        <rect x="28" y="58" width="64" height="9" rx="4.5" fill="#FF6B35" opacity="0.92" />
+        {/* racket — attached to right arm */}
+        <g transform={`rotate(${-35 - armSwing * 1.8}, 104, 130)`}>
+          {/* handle */}
+          <rect x="101" y="128" width="6" height="30" rx="3" fill="#FF6B35" />
+          {/* head */}
+          <ellipse cx="104" cy="104" rx="18" ry="24" fill="none" stroke="#C47A4A" strokeWidth="3" />
+          {/* strings */}
+          {[-12,-6,0,6,12].map(x => <line key={x} x1={104+x} y1="80" x2={104+x} y2="128" stroke="#C47A4A" strokeWidth="0.9" opacity="0.55" />)}
+          {[-18,-10,-2,6,14,22].map(y => <line key={y} x1="86" y1={104+y-20} x2="122" y2={104+y-20} stroke="#C47A4A" strokeWidth="0.9" opacity="0.55" />)}
         </g>
-      </svg>
-    ),
-    badminton: (
-      <svg width="160" height="200" viewBox="0 0 130 200" fill="none" style={{ filter: 'drop-shadow(0 8px 24px rgba(255,107,53,0.18))' }}>
-        <ellipse cx="65" cy="192" rx="40" ry="7" fill="rgba(0,0,0,0.10)" />
-        <g transform={`translate(0, ${Math.sin(t * 1.6) * 3})`}>
-          {/* jersey */}
-          <rect x="38" y="104" width="50" height="52" rx="14" fill="#4F46E5" />
-          {/* jersey stripes */}
-          <rect x="38" y="114" width="50" height="6" fill="#6366F1" opacity="0.6" />
-          {/* legs — dynamic stride */}
-          <rect x="36" y="148" width="16" height="42" rx="8" fill="#1E293B" transform={`rotate(${-8 + armSwing * 0.4} 44 148)`} />
-          <rect x="56" y="148" width="16" height="42" rx="8" fill="#1E293B" transform={`rotate(${8 - armSwing * 0.4} 64 148)`} />
-          <ellipse cx="44" cy="190" rx="10" ry="5" fill="#111827" />
-          <ellipse cx="64" cy="190" rx="10" ry="5" fill="#111827" />
-          {/* left arm (free) */}
-          <rect x="20" y="106" width="22" height="10" rx="5" fill="#4F46E5" transform={`rotate(${-20 - armSwing} 20 106)`} />
-          <ellipse cx="16" cy="124" rx="6" ry="4" fill="#FDDCBC" transform={`rotate(${-armSwing} 20 106)`} />
-          {/* racket arm */}
-          <rect x="80" y="100" width="24" height="10" rx="5" fill="#4F46E5" transform={`rotate(${35 + armSwing * 1.5} 80 100)`} />
-          <ellipse cx="104" cy="92" rx="6" ry="4" fill="#FDDCBC" transform={`rotate(${armSwing} 100 90)`} />
-          {/* racket */}
-          <g transform={`rotate(${armSwing * 2} 108 72)`}>
-            <ellipse cx="108" cy="58" rx="13" ry="17" fill="none" stroke="#C47A4A" strokeWidth="2.5" />
-            {/* strings */}
-            {[-8, -2, 4, 10].map(x => <line key={x} x1={108 + x} y1="41" x2={108 + x} y2="75" stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
-            {[-12, -6, 0, 6, 12].map(y => <line key={y} x1="95" y1={58 + y} x2="121" y2={58 + y} stroke="#C47A4A" strokeWidth="0.8" opacity="0.5" />)}
-            <rect x="105" y="74" width="6" height="16" rx="3" fill="#FF6B35" />
-          </g>
-          {/* shuttlecock floating */}
-          <g transform={`translate(${Math.sin(t) * 4}, ${Math.cos(t * 1.3) * 4 - 10})`}>
-            <ellipse cx="28" cy="22" rx="5" ry="4" fill="white" stroke="#ddd" strokeWidth="1" />
-            <path d="M28 18 L20 4 M28 18 L28 2 M28 18 L36 4" stroke="#ddd" strokeWidth="1.2" strokeLinecap="round" />
-          </g>
-          {/* headband */}
-          <rect x="34" y="52" width="56" height="8" rx="4" fill="#FF6B35" opacity="0.9" />
-          <Head3D eyebrowAngry />
+        {/* shuttlecock */}
+        <g transform={`translate(${Math.sin(t) * 6 + 110}, ${Math.cos(t * 1.3) * 6 + 40})`}>
+          <ellipse cx="0" cy="0" rx="6" ry="5" fill="white" stroke="#CCC" strokeWidth="1.2" />
+          <path d="M0 -5 L-9 -22 M0 -5 L0 -24 M0 -5 L9 -22" stroke="#DDD" strokeWidth="1.5" strokeLinecap="round" />
         </g>
-      </svg>
-    ),
-  }
+        <Head3D eyebrowAngry mouthOpen />
+      </g>
+    </svg>
+  )
+
+  const scenes = { reading: readingScene, coding: codingScene, badminton: badmintonScene }
 
   return (
     <div
@@ -556,7 +753,7 @@ export default function Home() {
                 ].map((s, i) => (
                   <div key={i} className="hero-stat" style={{ borderLeft: i > 0 ? '1px solid var(--border)' : 'none' }}>
                     <p className="counter" style={{ fontSize: '1.75rem' }}>{s.value}</p>
-                    <p style={{ fontSize: '0.6875rem', color: 'var(--muted)', marginTop: 4 }}>{s.label}</p>
+                    <p style={{ fontSize: '0.8125rem', color: 'var(--secondary)', marginTop: 4 }}>{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -573,11 +770,11 @@ export default function Home() {
                     <h2 className="animate-in" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 28 }}>
                       语言 × 商科<br /><span style={{ color: 'var(--accent)' }}>× AI 复合型</span>
                     </h2>
-                    <blockquote className="animate-in" style={{ fontSize: '1rem', color: 'var(--secondary)', lineHeight: 1.9, maxWidth: 480, borderLeft: '3px solid var(--accent)', paddingLeft: 20, margin: 0 }}>
-                      <p style={{ marginBottom: 10 }}>
+                    <blockquote className="animate-in" style={{ fontSize: '1.0625rem', color: 'var(--primary)', lineHeight: 2.0, maxWidth: 480, borderLeft: '3px solid var(--accent)', paddingLeft: 20, margin: 0 }}>
+                      <p style={{ marginBottom: 12, fontStyle: 'italic' }}>
                         "在竞争日益激烈、变化愈加迅速的经济环境中，深度工作的能力正在成为一种稀缺而宝贵的技能。"
                       </p>
-                      <footer style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontStyle: 'normal' }}>
+                      <footer style={{ fontSize: '0.875rem', color: 'var(--secondary)', fontStyle: 'normal', fontWeight: 500 }}>
                         — Cal Newport，《深度工作》（2016）
                       </footer>
                     </blockquote>
@@ -604,7 +801,7 @@ export default function Home() {
                     {timeline.map((item, i) => (
                       <div key={i} style={{ display: 'grid', gridTemplateColumns: '72px 1fr', gap: 20, paddingBottom: i < timeline.length - 1 ? 32 : 0, paddingLeft: 20, borderLeft: item.accent ? '2px solid var(--accent)' : '2px solid var(--border)', position: 'relative' }}>
                         <div style={{ position: 'absolute', left: -6, top: 4, width: 10, height: 10, borderRadius: '50%', background: item.accent ? 'var(--accent)' : 'var(--border-strong)', border: '2px solid var(--canvas)' }} />
-                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: item.accent ? 'var(--accent)' : 'var(--muted)', fontWeight: 600, paddingTop: 2 }}>{item.year}</span>
+                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: item.accent ? 'var(--accent)' : 'var(--secondary)', fontWeight: 600, paddingTop: 2 }}>{item.year}</span>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
                             <h4 style={{ fontWeight: 600 }}>{item.title}</h4>
@@ -636,7 +833,7 @@ export default function Home() {
                   <div className="reveal">
                     <p className="section-label">Chapter 02</p>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 700, lineHeight: 1.3 }}>我的<br />方法论</h3>
-                    <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginTop: 12, lineHeight: 1.6 }}>点击卡片<br />展开详情</p>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--secondary)', marginTop: 12, lineHeight: 1.6 }}>点击卡片<br />展开详情</p>
                   </div>
                   <div className="reveal" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {methods.map((m, i) => (
@@ -647,7 +844,7 @@ export default function Home() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: m.color, fontWeight: 600 }}>{m.step}</span>
                               <h4 style={{ fontWeight: 700 }}>{m.title}</h4>
-                              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--muted)' }}>{expandedMethod === i ? '▲' : '▼'}</span>
+                              <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--secondary)' }}>{expandedMethod === i ? '▲' : '▼'}</span>
                             </div>
                             <p style={{ fontSize: '0.875rem', color: 'var(--secondary)' }}>{m.short}</p>
                           </div>
@@ -743,7 +940,7 @@ export default function Home() {
                       <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>📺</div>
                       <div>
                         <p style={{ fontWeight: 700, fontSize: '1rem' }}>FiliTV</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>海外流媒体运营</p>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--secondary)' }}>海外流媒体运营</p>
                       </div>
                     </div>
                     <p style={{ fontSize: '0.875rem', color: 'var(--secondary)', lineHeight: 1.7, marginBottom: 16 }}>
@@ -761,7 +958,7 @@ export default function Home() {
                       <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>💻</div>
                       <div>
                         <p style={{ fontWeight: 700, fontSize: '1rem' }}>AI 独立开发</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>用 AI 工具构建产品</p>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--secondary)' }}>用 AI 工具构建产品</p>
                       </div>
                     </div>
                     <p style={{ fontSize: '0.875rem', color: 'var(--secondary)', lineHeight: 1.7, marginBottom: 16 }}>
@@ -802,7 +999,7 @@ export default function Home() {
                       <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--accent-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', flexShrink: 0 }}>{c.icon}</div>
                       <div style={{ textAlign: 'left', flex: 1 }}>
                         <p style={{ fontWeight: 600, marginBottom: 2 }}>{c.title}</p>
-                        <p style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{c.subtitle}</p>
+                        <p style={{ fontSize: '0.875rem', color: 'var(--secondary)' }}>{c.subtitle}</p>
                       </div>
                       <svg style={{ color: 'var(--accent)', flexShrink: 0 }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" strokeLinecap="round" strokeLinejoin="round" />
